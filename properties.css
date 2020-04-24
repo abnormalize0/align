@@ -1,0 +1,8 @@
+/* .textfieldproperties {
+    visibility: hidden;
+} */
+
+.props {
+    position: absolute;
+    width: 300px;
+}

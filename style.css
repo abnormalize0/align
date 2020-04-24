@@ -1,0 +1,167 @@
+* {
+    user-select: none;
+}
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.tosql {
+    position: absolute;
+    z-index: 100;
+    position: absolute;
+    text-align: center;
+    height: 35px;
+    width: 280px;
+    background: orange;
+    right: 10px; top: 700px;
+    font-size: 180%;
+}
+
+.substrate {
+    position: fixed;
+    top: 0px; bottom: 0px; left: 0px; right: 0px;
+    z-index: 0;
+    /* background-color: orangered; */
+}
+
+.item {
+    position: absolute;
+}
+
+.menu {
+    position: fixed;
+    left: -200px; top: 0px; bottom: 0px;
+    background: rgba(248, 211, 143, 1);
+    /*height: 969px;*/
+    width: 200px;
+    z-index: 100;
+}
+
+.settings {
+    position: fixed;
+    right: -300px; top: 0px; bottom: 0px;
+    background: rgba(248, 211, 143, 1);
+    /*height: 969px;*/
+    width: 300px;
+    z-index: 500;
+}
+
+.text_input_properties {
+    position: fixed;
+    right: -300px; top: 0px; bottom: 0px;
+    background: rgba(248, 211, 143, 1);
+    /* height: 969px; */
+    width: 300px;
+    z-index: 100;
+}
+
+
+.hide-reveal{
+    position: fixed;
+    bottom: 10px; left: 65px;
+    width: 50px;
+    height: 50px;
+    font-size: 270%;
+    text-align: center;
+    z-index: 200;
+}
+.hide-reveal_bottom{
+    position: fixed;
+    bottom: 10px; left: 65px;
+    width: 50px;
+    height: 50px;
+    background: orange;
+    font-size: 270%;
+    text-align: center;
+    z-index: 150;
+}
+
+.settings-reveal{
+    position: fixed;
+    bottom: 10px; right: 125px;
+    width: 50px;
+    height: 50px;
+    font-size: 215%;
+    text-align: center;
+    z-index: 900;
+}
+.settings-reveal_bottom{
+    position: fixed;
+    bottom: 10px; right: 125px;
+    width: 50px;
+    height: 50px;
+    background: orange;
+    font-size: 270%;
+    text-align: center;
+    z-index: 899;
+}
+
+
+.text_baton {
+    position: absolute;
+    height: 20px;
+    width: 180px;
+    background: orange;
+    left: 5px; top: 100px;
+}
+
+.button_baton {
+    position: absolute;
+    height: 20px;
+    width: 180px;
+    background: orange;
+    left: 5px; top: 130px;
+}
+
+.editabletext {
+    position: absolute;
+    height: 20px;
+    width: 180px;
+    background: orange;
+    left: 5px; top: 160px;
+}
+
+.table {
+    position: absolute;
+    height: 20px;
+    width: 180px;
+    background: orange;
+    left: 5px; top: 190px;
+}
+
+.save_baton {
+    position: absolute;
+    text-align: center;
+    height: 35px;
+    width: 130px;
+    background: orange;
+    right: 160px; top: 130px;
+}
+
+.save_project_baton {
+    position: absolute;
+    text-align: center;
+    height: 35px;
+    width: 130px;
+    background: orange;
+    right: 10px; top: 130px;
+}
+
+.defaultclass {
+    position: absolute;
+
+}
+
+.ranges {
+    position: absolute;
+    bottom: 70px;
+}
+
+.delet {
+    position: absolute;
+    width: 300px;
+    bottom: 70px;
+    background-color: red;
+}

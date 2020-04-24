@@ -1,0 +1,22 @@
+.sqlgenpage {
+    position: fixed;
+    top: -100%; bottom: 100%; left: 0px; right: 0px;
+    z-index: 1000;
+    background-color: whitesmoke;
+}
+
+.field {
+    position: absolute;
+    top: 2%; bottom: 2%; left: 15%; right: 15%;
+    background: url(Grid.png);
+    background-attachment: local;
+}
+
+.connect {
+    position: absolute;
+    border-radius: 50%;
+    height: 20px;
+    width: 20px;
+    background-color: orange;
+    z-index: 5000;
+}
