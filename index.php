@@ -10,7 +10,6 @@
         <link rel="stylesheet" href="properties.css" />
         <link rel="stylesheet" href="sqlgenerate.css" />
         <link rel="stylesheet" href="paging.css" />
-        <link rel="script" href="menu_buttons.js" />
     </head>
     <body>
         <div class="substrate" id="substrate"></div>
@@ -81,11 +80,11 @@
             <div class="add_block" id="add_block"> + </div>
         </div>
         
-        <script src="draq.js"></script>
-        <script src="sqlgenerate.js"></script>
-        <script src="menu_buttons.js"></script>
-        <script src="paging.js"></script>
-        <script src="dynamic_content.js"></script>
-        <script src="saving.js"></script>
+        <script src="javascript/draq.js"></script>
+        <script src="javascript/sqlgenerate.js"></script>
+        <script src="javascript/menu_buttons.js"></script>
+        <script src="javascript/paging.js"></script>
+        <script src="javascript/dynamic_content.js"></script>
+        <script src="javascript/saving.js"></script>
     </body>
 </html>
