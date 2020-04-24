@@ -15,13 +15,24 @@ function saving(b) { //скачивание документов
             if (elementscode[i].left != undefined) text = text + elementscode[i].left;
             if (elementscode[i].top != undefined) text = text + elementscode[i].top + "\"";
             if (elementscode[i].placeholder != undefined) text = text + elementscode[i].placeholder;
-            if (elementscode[i].text != undefined) text = text + elementscode[i].text;
+            //if (elementscode[i].text != undefined) text = text + elementscode[i].text;
+            if ((elementscode[i].text != undefined) && (elements[i].type.localeCompare("table") == 0)) {
+                text = text + "<?php include \"" + elements[i].type + elements[i].id + "_content.php\"; ?>";
+                let file = document.createElement('a');
+                file.style.display = 'none';
+                let content = elementscode[i].text;
+                let filename = elements[i].type + elements[i].id + "_content.php";
+                file.setAttribute('href','data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+                file.setAttribute('download', filename);
+                file.click();
+                file.remove();
+            } else if (elementscode[i].text != undefined) text = text + elementscode[i].text;
             text = text + elementscode[i].end + "\n";
         }
         text = text + "\t</body>\n</html>";
 
-        //let filename = title + ".html";
-        let filename = document.getElementById("page" + pages).innerHTML + ".html";
+        //let filename = title + ".php";
+        let filename = document.getElementById("page" + pages).innerHTML + ".php";
         file.setAttribute('href','data:text/plain;charset=utf-8,' + encodeURIComponent(text));
         file.setAttribute('download', filename);
         file.click();

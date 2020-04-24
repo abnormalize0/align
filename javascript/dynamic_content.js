@@ -34,10 +34,14 @@ async function sql_exec() {
                 console.log(wtite_to + " " + write_from);
                 table_id = "el" + wtite_to;
 
-                let response = await fetch("getuser.php?q="+write_from);
+                let response = await fetch("ajax_reqests/interface_content.php?q="+write_from);
                 if (response.ok) {
                     let text = await response.text();
                     document.getElementById(table_id).innerHTML = text;
+                }
+                response = await fetch("ajax_reqests/release_content.php?q="+write_from);
+                if (response.ok) {
+                    let text = await response.text();
                     elementscode[wtite_to].text = text;
                 }
             }

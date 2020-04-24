@@ -73,7 +73,7 @@ highlight(1);
 // hide_paging();
 
 function create_page() {
-    document.getElementById("pages_part").insertAdjacentHTML('beforeend',"<div class=\"page_block\" style=\"left: " + (10 + (90 * number_of_pages)) + "px\" id=\"page" + (number_of_pages + 1) + "\"> Page " + (number_of_pages + 1) + "</div>");
+    document.getElementById("pages_part").insertAdjacentHTML('beforeend',"<div class=\"page_block\" style=\"left: " + (10 + (90 * number_of_pages)) + "px\" id=\"page" + (number_of_pages + 1) + "\">Page_" + (number_of_pages + 1) + "</div>");
     document.getElementById("page" + (number_of_pages + 1)).addEventListener("mousedown", goto_page.bind(1,number_of_pages + 1));
     number_of_pages++;
 }
