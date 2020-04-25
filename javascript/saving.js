@@ -1,7 +1,9 @@
 const save_baton = document.querySelector(".save_baton");
 save_baton.addEventListener("mousedown", saving);
 
-function saving(b) { //скачивание документов
+function saving(b) { //скачивание файл
+    let zip = new JSZip();
+    let content = zip.folder("content");
     for (let pages = 1; pages <= number_of_pages; pages++) {
         let file = document.createElement('a');
         file.style.display = 'none';
@@ -17,15 +19,11 @@ function saving(b) { //скачивание документов
             if (elementscode[i].placeholder != undefined) text = text + elementscode[i].placeholder;
             //if (elementscode[i].text != undefined) text = text + elementscode[i].text;
             if ((elementscode[i].text != undefined) && (elements[i].type.localeCompare("table") == 0)) {
-                text = text + "<?php include \"" + elements[i].type + elements[i].id + "_content.php\"; ?>";
-                let file = document.createElement('a');
-                file.style.display = 'none';
-                let content = elementscode[i].text;
+                text = text + "<?php include \"content/" + elements[i].type + elements[i].id + "_content.php\"; ?>";
+
+                let content_text = elementscode[i].text;
                 let filename = elements[i].type + elements[i].id + "_content.php";
-                file.setAttribute('href','data:text/plain;charset=utf-8,' + encodeURIComponent(content));
-                file.setAttribute('download', filename);
-                file.click();
-                file.remove();
+                content.file(filename, content_text)
             } else if (elementscode[i].text != undefined) text = text + elementscode[i].text;
             text = text + elementscode[i].end + "\n";
         }
@@ -33,17 +31,21 @@ function saving(b) { //скачивание документов
 
         //let filename = title + ".php";
         let filename = document.getElementById("page" + pages).innerHTML + ".php";
-        file.setAttribute('href','data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        zip.file(filename, text)
+    }
+
+    let text = ".item {\n\tposition: absolute;\n}" // тут надо будет сделать более продвинутый генератор css
+    zip.file("style.css", text);
+
+    zip.generateAsync({type:"base64"})
+    .then(function(content) {
+        let file = document.createElement('a');
+        file.style.display = 'none';
+        let filename = "test.zip";
+        file.setAttribute('href','data:application/zip;base64,' + content);
         file.setAttribute('download', filename);
         file.click();
         file.remove();
-    }
-    let file = document.createElement('a');
-    file.style.display = 'none';
-    let text = ".item {\n\tposition: absolute;\n}"
-    let filename = "style.css";
-    file.setAttribute('href','data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    file.setAttribute('download', filename);
-    file.click();
-    file.remove();
+    });
+    alert("here");
 }

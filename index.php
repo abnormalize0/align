@@ -6,10 +6,10 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <meta charset="UTF-8" />
         <title>awesome shit generator</title>
-        <link rel="stylesheet" href="style.css" />
-        <link rel="stylesheet" href="properties.css" />
-        <link rel="stylesheet" href="sqlgenerate.css" />
-        <link rel="stylesheet" href="paging.css" />
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/properties.css" />
+        <link rel="stylesheet" href="css/sqlgenerate.css" />
+        <link rel="stylesheet" href="css/paging.css" />
     </head>
     <body>
         <div class="substrate" id="substrate"></div>
@@ -79,7 +79,8 @@
             <div id="pages_part" class="pages_part"></div>
             <div class="add_block" id="add_block"> + </div>
         </div>
-        
+
+        <script src="jszip_lib/dist/jszip.js"></script>
         <script src="javascript/draq.js"></script>
         <script src="javascript/sqlgenerate.js"></script>
         <script src="javascript/menu_buttons.js"></script>
