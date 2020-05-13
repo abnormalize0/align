@@ -1,6 +1,9 @@
 <?php
 
-$q = intval($_GET['q']);
+$from = intval($_GET['from']);
+$array = intval($_GET['array'][3]);
+echo $array;
+
 $dbname = $_COOKIE["database"];
 $host = $_COOKIE["host"];
 $login = $_COOKIE["login"];
@@ -14,7 +17,7 @@ $table_title = 0;
 $tables_sql="SHOW TABLES FROM ".$dbname;
 $tables_result = mysqli_query($con,$tables_sql);
 while($row = mysqli_fetch_array($tables_result)) {
-    if ($index == $q) {
+    if ($index == $from) {
         $table_title = $row['Tables_in_'.$dbname];
     }
     $index++;

@@ -176,28 +176,7 @@ function add_block(b) {  //добавление элементов в2точка
           selected: null
     }
 }
-    function colorfy_out(id,e) {
-        if (drawing) {
-            document.getElementById("connect_out" + id).style.backgroundColor = "red";
-        } else {
-            document.getElementById("connect_out" + id).style.backgroundColor = "green";
-        }
-    }
-    function uncolorfy_out(id,e) {
-        document.getElementById("connect_out" + id).style.backgroundColor = "orange";
-    }
-    function colorfy_in(id,e) {
-        if (drawing) {
-            document.getElementById("connect_in" + id).style.backgroundColor = "green";
-        } else {
-            document.getElementById("connect_in" + id).style.backgroundColor = "red";
-        }
-        cur_hover = id;
-    }
-    function uncolorfy_in(id,e) {
-        document.getElementById("connect_in" + id).style.backgroundColor = "orange";
-        cur_hover = -1;
-    }
+    
     function block_move(id,e) {
 
         window.addEventListener("mousemove", line_blockmove);
@@ -212,124 +191,6 @@ function add_block(b) {  //добавление элементов в2точка
             window.removeEventListener("mouseup", line_blockmouseup);
         }
     }
-
-
-    function draw_line(id,e) {
-
-        window.addEventListener("mousemove", line_mousemove);
-        window.addEventListener("mouseup", line_mouseup);
-
-        function line_mousemove(e) {
-            drawing = 1;
-            if (sql_blocks[id].output_line == null) {
-                sql_blocks[id].output_line = lines;
-                cur_line = lines;
-                lines++;
-            } else {
-                cur_line = sql_blocks[id].output_line;
-            }
-            var elementExists = document.getElementById("line" + cur_line);
-            if (elementExists == null) {
-                document.getElementById("field").insertAdjacentHTML('beforeend', "<div id='line" + cur_line +"'></div>");
-            }
-
-            
-            
-            let scroll_pos_y = document.getElementById('field').scrollTop;
-            let scroll_pos_x = document.getElementById('field').scrollLeft;
-            
-  
-            const rect = document.getElementById("connect_out" + id).getBoundingClientRect();
-
-
-          let x1 = scroll_pos_x + rect.left - (document.documentElement.clientWidth / 100 * 15) + 10;
-          let x2 = scroll_pos_x + e.clientX - (document.documentElement.clientWidth / 100 * 15);
-          let y1 = scroll_pos_y + rect.top - (document.documentElement.clientHeight / 100 * 2) + 10;
-          let y2 = scroll_pos_y + e.clientY - (document.documentElement.clientHeight / 100 * 2);
-
-          sql_lines[cur_line] = {
-              x1: x1,
-              x2: x2,
-              y1: y1,
-              y2: y2
-          }
-          
-          
-            let distance = Math.sqrt(((x1-x2)*(x1-x2)) + ((y1-y2)*(y1-y2)));
-            let xMid = (x1 + x2) / 2;
-            let yMid = (y1 + y2) / 2;
-            let salopeInRadian = Math.atan2(y1 - y2, x1 - x2);
-            let salopeInDegrees = (salopeInRadian * 180) / Math.PI;
-
-            let line = document.getElementById("line" + cur_line);
-            line.style.width = distance + "px";
-            line.style.height = "1px";
-            line.style.top = yMid + "px";
-            line.style.left = xMid - (distance/2) + "px";
-            line.style.transform = "rotate(" + salopeInDegrees + "deg)";
-            line.style.backgroundColor = "black";
-            line.style.position = "absolute";
-          }
-          function line_mouseup() {
-              window.removeEventListener("mousemove", line_mousemove);
-              window.removeEventListener("mouseup", line_mouseup);
-              let exist = sql_blocks[id].next_line;
-              if (exist != null) {      //удаляю существующую линию оттуда откуда веду
-                  console.log("here");
-                  sql_blocks[sql_blocks[id].next_line].prev_line = null;
-                  sql_blocks[sql_blocks[id].next_line].input_line = null;
-              }
-              
-              if ((cur_hover == -1)||(sql_blocks[cur_hover].output_line == cur_line)) {
-                console.log("what");
-                
-                console.log("1");
-                let exist = document.getElementById('line' + cur_line);
-                if (exist!=null) {
-                    console.log("2");
-                    document.getElementById('line' + cur_line).remove();
-                }
-                exist = sql_blocks[id].next_line;
-                if (exist!=null) {
-                    sql_blocks[sql_blocks[id].next_line].prev_line = null;
-                    sql_blocks[sql_blocks[id].next_line].input_line = null;
-                }
-                sql_blocks[id].next_line = null;
-                sql_blocks[id].output_line = null;
-                drawing = 0;
-                return;
-              }
-              exist = sql_blocks[cur_hover].prev_line;
-              if (exist != null) {
-                  console.log("for what");
-                  document.getElementById('line' + sql_blocks[sql_blocks[cur_hover].prev_line].output_line).remove();
-                  sql_blocks[sql_blocks[cur_hover].prev_line].next_line = null;
-                  sql_blocks[sql_blocks[cur_hover].prev_line].output_line = null;
-              }
-              sql_blocks[id].next_line = null;
-              sql_blocks[id].output_line = null;
-              sql_blocks[cur_hover].prev_line = null;
-              sql_blocks[cur_hover].input_line = null;
-              exist = sql_blocks[cur_hover].prev_line;
-              if (exist != null) {
-                console.log("no,here");
-                  document.getElementById('line' + sql_blocks[sql_blocks[cur_hover].prev_line].output_line).remove();
-                  sql_blocks[sql_blocks[cur_hover].prev_line].next_line = null;
-                  sql_blocks[sql_blocks[cur_hover].prev_line].output_line = null;
-              }
-
-              sql_blocks[cur_hover].prev_line = id;
-              sql_blocks[id].next_line = cur_hover;
-              sql_blocks[cur_hover].input_line = cur_line;
-              sql_blocks[id].output_line = cur_line;
-
-              drawing = 0;
-              console.log("-");
-              sql_exec();
-        }
-    }
-
-   
 
     let el = document.getElementById("block" + blocks);
     blocks++;
@@ -550,4 +411,142 @@ document.onkeydown = function (evt) {
         }
     }
     return evt.keyCode;
+}
+
+function draw_line(id,e) {
+    window.addEventListener("mousemove", line_mousemove);
+    window.addEventListener("mouseup", line_mouseup);
+
+    function line_mousemove(e) {
+        drawing = 1;
+        if (sql_blocks[id].output_line == null) {
+            sql_blocks[id].output_line = lines;
+            cur_line = lines;
+            lines++;
+        } else {
+            cur_line = sql_blocks[id].output_line;
+        }
+        var elementExists = document.getElementById("line" + cur_line);
+        if (elementExists == null) {
+            document.getElementById("field").insertAdjacentHTML('beforeend', "<div id='line" + cur_line +"'></div>");
+        }
+
+        
+        
+        let scroll_pos_y = document.getElementById('field').scrollTop;
+        let scroll_pos_x = document.getElementById('field').scrollLeft;
+        
+
+        const rect = document.getElementById("connect_out" + id).getBoundingClientRect();
+
+
+      let x1 = scroll_pos_x + rect.left - (document.documentElement.clientWidth / 100 * 15) + 10;
+      let x2 = scroll_pos_x + e.clientX - (document.documentElement.clientWidth / 100 * 15);
+      let y1 = scroll_pos_y + rect.top - (document.documentElement.clientHeight / 100 * 2) + 10;
+      let y2 = scroll_pos_y + e.clientY - (document.documentElement.clientHeight / 100 * 2);
+
+      sql_lines[cur_line] = {
+          x1: x1,
+          x2: x2,
+          y1: y1,
+          y2: y2
+      }
+      
+      
+        let distance = Math.sqrt(((x1-x2)*(x1-x2)) + ((y1-y2)*(y1-y2)));
+        let xMid = (x1 + x2) / 2;
+        let yMid = (y1 + y2) / 2;
+        let salopeInRadian = Math.atan2(y1 - y2, x1 - x2);
+        let salopeInDegrees = (salopeInRadian * 180) / Math.PI;
+
+        let line = document.getElementById("line" + cur_line);
+        line.style.width = distance + "px";
+        line.style.height = "1px";
+        line.style.top = yMid + "px";
+        line.style.left = xMid - (distance/2) + "px";
+        line.style.transform = "rotate(" + salopeInDegrees + "deg)";
+        line.style.backgroundColor = "black";
+        line.style.position = "absolute";
+      }
+      function line_mouseup() {
+          window.removeEventListener("mousemove", line_mousemove);
+          window.removeEventListener("mouseup", line_mouseup);
+          let exist = sql_blocks[id].next_line;
+          if (exist != null) {      //удаляю существующую линию оттуда откуда веду
+              console.log("here");
+              sql_blocks[sql_blocks[id].next_line].prev_line = null;
+              sql_blocks[sql_blocks[id].next_line].input_line = null;
+          }
+          
+          if ((cur_hover == -1)||(sql_blocks[cur_hover].output_line == cur_line)) {
+            console.log("what");
+            
+            console.log("1");
+            let exist = document.getElementById('line' + cur_line);
+            if (exist!=null) {
+                console.log("2");
+                document.getElementById('line' + cur_line).remove();
+            }
+            exist = sql_blocks[id].next_line;
+            if (exist!=null) {
+                sql_blocks[sql_blocks[id].next_line].prev_line = null;
+                sql_blocks[sql_blocks[id].next_line].input_line = null;
+            }
+            sql_blocks[id].next_line = null;
+            sql_blocks[id].output_line = null;
+            drawing = 0;
+            sql_exec();
+            return;
+          }
+          exist = sql_blocks[cur_hover].prev_line;
+          if (exist != null) {
+              console.log("for what");
+              document.getElementById('line' + sql_blocks[sql_blocks[cur_hover].prev_line].output_line).remove();
+              sql_blocks[sql_blocks[cur_hover].prev_line].next_line = null;
+              sql_blocks[sql_blocks[cur_hover].prev_line].output_line = null;
+          }
+          sql_blocks[id].next_line = null;
+          sql_blocks[id].output_line = null;
+          sql_blocks[cur_hover].prev_line = null;
+          sql_blocks[cur_hover].input_line = null;
+          exist = sql_blocks[cur_hover].prev_line;
+          if (exist != null) {
+            console.log("no,here");
+              document.getElementById('line' + sql_blocks[sql_blocks[cur_hover].prev_line].output_line).remove();
+              sql_blocks[sql_blocks[cur_hover].prev_line].next_line = null;
+              sql_blocks[sql_blocks[cur_hover].prev_line].output_line = null;
+          }
+
+          sql_blocks[cur_hover].prev_line = id;
+          sql_blocks[id].next_line = cur_hover;
+          sql_blocks[cur_hover].input_line = cur_line;
+          sql_blocks[id].output_line = cur_line;
+
+          drawing = 0;
+          console.log("-");
+          sql_exec();
+    }
+}
+
+function colorfy_out(id,e) {
+    if (drawing) {
+        document.getElementById("connect_out" + id).style.backgroundColor = "red";
+    } else {
+        document.getElementById("connect_out" + id).style.backgroundColor = "green";
+    }
+}
+function uncolorfy_out(id,e) {
+    document.getElementById("connect_out" + id).style.backgroundColor = "orange";
+}
+function colorfy_in(id,e) {
+    if (drawing) {
+        document.getElementById("connect_in" + id).style.backgroundColor = "green";
+    } else {
+        document.getElementById("connect_in" + id).style.backgroundColor = "red";
+    }
+    cur_hover = id;
+}
+function uncolorfy_in(id,e) {
+    document.getElementById("connect_in" + id).style.backgroundColor = "orange";
+    cur_hover = -1;
 }

@@ -429,22 +429,35 @@ function mousedown2(b) {  //добавление элементов в2точк�
       document.getElementById("tree").insertAdjacentHTML('beforeend', "<div id = \"tree" + count + "\">> Таблица " + count + "</div>");
 
       for (let i = 0; i < blocks; i++) {
+          /*document.getElementById("connect_out" + i).removeEventListener("mousedown",draw_line.bind(null,i));
+          document.getElementById("connect_out" + i).removeEventListener("mouseover",colorfy_out.bind(null,i));
+          document.getElementById("connect_out" + i).removeEventListener("mouseout",uncolorfy_out.bind(null,i));*/
           let insert = "<h3>Вывести данные в таблицу:</h3>" + "<select> <option> Не выбрано </option> ";
           for (let j = 0; j < elements.length; j++) {
-              if (elements[i].type == "table") {
+            //alert(elements[i].type);
+              if (elements[j].type.localeCompare("table") == 0) {
+                console.log("block " + i + " element " + j + " type " + elements[i].type);
+                console.log("inside " + elements[j].text);
                   if (sql_blocks[i].selected == j) {
                     insert = insert + "<option selected>";
+                    console.log("status: inserted and selected");
                   } else {
                     insert = insert + "<option>";
+                    console.log("status: inserted and not selected");
                   }
                   insert = insert + elements[j].text;
                   insert = insert + "</option>";
               }
           }
           insert = insert + "</select> <div id='connect_out" + i + "' style='right: -10px; top: 40px;' class='connect'> </div>";
+          //alert("connect_out" + i);
+          
           //document.getElementById("field").insertAdjacentHTML('beforeend',insert);
           if(document.getElementById("block" + i).innerHTML.indexOf("<h3>Вывести данные в таблицу:</h3>") > -1) {           //вот для этой штуки неплохо бы ещё структуру все равно создать
               document.getElementById("block" + i).innerHTML = insert;
+              document.getElementById("connect_out" + i).addEventListener("mousedown",draw_line.bind(null,i));
+              document.getElementById("connect_out" + i).addEventListener("mouseover",colorfy_out.bind(null,i));
+              document.getElementById("connect_out" + i).addEventListener("mouseout",uncolorfy_out.bind(null,i));
           }
       }
     }

@@ -1,6 +1,6 @@
 <?php
 
-$q = intval($_GET['q']);
+$q = intval($_GET['from']);
 $dbname = $_COOKIE["database"];
 $host = $_COOKIE["host"];
 $login = $_COOKIE["login"];

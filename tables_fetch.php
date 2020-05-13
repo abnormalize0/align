@@ -1,7 +1,6 @@
 <?php
 $dbname = $_COOKIE["database"];
 $sql= "SHOW TABLES FROM ".$dbname;
-echo $dbname;
 $arr = array();
 $result= $pdo->query($sql);
 $tables= $result->fetchAll();

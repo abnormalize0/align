@@ -8,7 +8,7 @@
 .field {
     position: absolute;
     top: 2%; bottom: 2%; left: 15%; right: 15%;
-    background: url(Grid.png);
+    background: url(img/Grid.png);
     background-attachment: local;
 }
 

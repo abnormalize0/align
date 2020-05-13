@@ -67,7 +67,7 @@
             <div id="from_block" class="button_baton"> Из таблицы </div>
             <div id="where_block" class="editabletext"> С условием, что </div>
             <div class="field" id="field" style="overflow-y: scroll; overflow-x: scroll;  overflow: hidden">
-            <button style="top: 200000px; left: 200000px; position: absolute;"></button>
+                <button style="top: 200000px; left: 200000px; position: absolute;"></button>
             </div>
             <button onclick="document.getElementById('field').scroll(100000, 100000);"> сброс </button>
             <button onclick="field_close();"> закрыть </button>
