@@ -1,5 +1,64 @@
-function showUser(str,id) {
+function regular_select(str,id) {
     set_selected(str, id);
+    sql_exec();
+}
+
+function from_select(str,id) {
+    select_columns(id, str);
+    set_selected(str, id);
+    sql_exec();
+}
+
+async function select_columns(id, str) {
+    if (document.contains(document.getElementById("select_columns" + id))) {
+        document.getElementById("select_columns" + id).remove();
+    }
+    let toinsert = document.getElementById("block" + id);
+    let insert_line = "<div id = \"select_columns" + id + "\"><br> Столбцы: <br> <select multiple size='5' id='select_columns_select" + id + "' onchange='reselect(" + id + ")'>";
+    let table = tables_array[str];
+    let response = await fetch("ajax_reqests/fetch_columns.php?send_table=" + table);
+    if (response.ok) {
+        let text = await response.text();
+        //document.getElementById(table_id).innerHTML = text;
+        insert_line = insert_line + text + "</select> </div>";
+    }
+
+    toinsert.insertAdjacentHTML('beforeend',insert_line);
+}
+
+let selected_array = [[],[]];
+let selected_len = 0;
+
+function reselect(id) {
+    let opt;
+    let len = document.getElementById("select_columns_select" + id).options.length;
+    let array_index = selected_len;
+    for (let i = 0; i < selected_len; i++) {
+        if (selected_array[i][0] == id) {
+            array_index = i;
+            break;
+        }
+    }
+    selected_array[array_index] = [];
+    let counter = 2;
+    for (let i = 0; i < len; i++) {
+        opt = document.getElementById("select_columns_select" + id).options[i];
+        
+        selected_array[array_index][0] = id;
+        
+        if (opt.selected) {
+            //opts.push(opt);
+            selected_array[array_index][counter] = opt.value;
+            counter++;
+            //alert(opt.value);
+        }
+        
+        
+    }
+    selected_array[array_index][1] = counter;
+    if (selected_len == array_index) {
+        selected_len++;
+    }
     sql_exec();
 }
 
@@ -42,6 +101,15 @@ async function sql_exec() {
                             continue;
                         }
                         request = request + "from=" + sql_blocks[cur_block].selected + "&";
+                        for (let i = 0; i < selected_len; i++) {
+                            if (selected_array[i][0] == cur_block) {
+                                for (let j = 2; j < selected_array[i][1]; j++) {
+                                    //alert(selected_array[i][j]);
+                                    //alert (request);
+                                    request = request + "select[]=" + selected_array[i][j] + "&";
+                                }
+                            }
+                        }
                         document.getElementById("block" + cur_block).style.boxShadow = "none";
                     }
                 } else if (sql_blocks[cur_block].purpose.localeCompare("where") == 0) {
@@ -50,7 +118,8 @@ async function sql_exec() {
                 }
             }
             if (request.search("from") != -1) {
-                let response = await fetch("ajax_reqests/interface_content.php?"+request+"array[]=1&array[]=2&array[]=3&a=0&b=0&array[]=4");
+                
+                let response = await fetch("ajax_reqests/interface_content.php?"+request);//+"array[]=1&array[]=2&array[]=3&a=0&b=0&array[]=4");
                 if (response.ok) {
                     let text = await response.text();
                     document.getElementById(table_id).innerHTML = text;

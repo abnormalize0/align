@@ -99,7 +99,7 @@ function add_block(b) {  //добавление элементов в2точка
     let block_y_position = document.getElementById('field').scrollTop + document.documentElement.clientHeight/2 - document.documentElement.clientHeight/100 * 2 - 100/2;
     let block_x_position = document.getElementById('field').scrollLeft + document.documentElement.clientWidth/2 - document.documentElement.clientWidth/100 * 15 - 250/2;
     if (this.id == "select_block") {
-        let insert = "<div class=\"defaultclass\" style=\"background: white; left: "+ block_x_position +"px; top: " + block_y_position + "px; height: 100px; width: 250px;\" class=\"item\" id=\"block" + blocks + "\"> <h3>Вывести данные в таблицу:</h3>" + "<select onchange=\"showUser(this.value, " + blocks + ")\"> <option value=\"\"> Не выбрано </option> ";
+        let insert = "<div class=\"defaultclass\" style=\"background: white; left: "+ block_x_position +"px; top: " + block_y_position + "px; height: 100px; width: 250px;\" class=\"item\" id=\"block" + blocks + "\"> <h3>Вывести данные в таблицу:</h3>" + "<select onchange=\"regular_select(this.value, " + blocks + ")\"> <option value=\"\"> Не выбрано </option> ";
         let j = 0;
         for (let i = 0; i < elements.length; i++) {
             if (elements[i].type == "table") {
@@ -129,7 +129,7 @@ function add_block(b) {  //добавление элементов в2точка
 
 
     } else if (this.id == "from_block") {
-        let insert = "<div class=\"defaultclass\" style=\"background: white; left: "+ block_x_position +"px; top: " + block_y_position + "px; width: 250px;\" class=\"item\" id=\"block" + blocks + "\"> <h3>Взятые из таблицы:</h3> <select onchange=\"showUser(this.value, " + blocks + ")\"> <option value=\"\"> Не выбрано </option>";
+        let insert = "<div class=\"defaultclass\" style=\"background: white; left: "+ block_x_position +"px; top: " + block_y_position + "px; width: 250px;\" class=\"item\" id=\"block" + blocks + "\"> <h3>Взятые из таблицы:</h3> <select onchange=\"from_select(this.value, " + blocks + ")\"> <option value=\"\"> Не выбрано </option>";
         for (let i = 0; i < tables_array.length; i++) {
             insert = insert + "<option value=\"" + i + "\">";
             insert = insert + tables_array[i];
