@@ -6,6 +6,7 @@ function regular_select(str,id) {
 function from_select(str,id) {
     select_columns(id, str);
     set_selected(str, id);
+    where_check();
     sql_exec();
 }
 
@@ -113,8 +114,12 @@ async function sql_exec() {
                         document.getElementById("block" + cur_block).style.boxShadow = "none";
                     }
                 } else if (sql_blocks[cur_block].purpose.localeCompare("where") == 0) {
-                    number_of_where++;
-                    request = request + "";
+                    if ((sql_blocks[cur_block].sign != null)&&(sql_blocks[cur_block].sign != "")&&(sql_blocks[cur_block].column != null)&&(sql_blocks[cur_block].column != "")&&(sql_blocks[cur_block].compare != null)&&(sql_blocks[cur_block].compare != "")) {
+                        request = request + "where_sign[]=" + sql_blocks[cur_block].sign + "&";
+                        request = request + "where_column[]=" + sql_blocks[cur_block].column + "&";
+                        request = request + "where_compare[]=" + sql_blocks[cur_block].compare + "&";
+                        number_of_where++;
+                    }
                 }
             }
             if (request.search("from") != -1) {
@@ -132,4 +137,45 @@ async function sql_exec() {
             }
         }
     }
+}
+
+async function where_fill() {
+    for (let id = 0; id < blocks; id++) {
+        if ((sql_blocks[id].purpose.localeCompare("where") == 0) && (sql_blocks[id].table != null) && (sql_blocks[id].table != "")) {
+            if ((document.contains(document.getElementById("where" + id))) && (sql_blocks[id].tochange == 0)) {
+                continue;
+            }
+            if (document.contains(document.getElementById("where" + id))) {
+                document.getElementById("where" + id).remove();
+            }
+            let toinsert = document.getElementById("block" + id);
+            let insert_line = "<div id = \"where" + id + "\">&nbspСтолбец:&nbsp&nbsp&nbsp&nbsp&nbspЗнак:&nbsp&nbsp&nbsp&nbsp&nbsp&nbspЗначение: <br> <select style=\"width: 70px;\" id='where_columns_select" + id + "' onchange='where_selection(" + id + ")'>";
+            let table = tables_array[sql_blocks[id].table];
+            let response = await fetch("ajax_reqests/where_content.php?send_table=" + table + "&id=" + id);
+            if (response.ok) {
+                let text = await response.text();
+                //document.getElementById(table_id).innerHTML = text;
+                insert_line = insert_line + text + "</div>";
+            }
+        
+            toinsert.insertAdjacentHTML('beforeend',insert_line);
+        }
+    }
+}
+
+function where_selection() {
+    for (let id = 0; id < blocks; id++) {
+        if ((sql_blocks[id].purpose.localeCompare("where") == 0)) {
+            let sign = document.getElementById( "where_columns_sign" + id );
+            sql_blocks[id].sign = sign.options[sign.selectedIndex].value;
+            let select = document.getElementById( "where_columns_select" + id );
+            sql_blocks[id].column = select.options[select.selectedIndex].value;
+            let search = document.getElementById( "where_columns_search" + id );
+            sql_blocks[id].compare = search.value;
+            console.log(sql_blocks[id].sign);
+            console.log(sql_blocks[id].column);
+            console.log(sql_blocks[id].compare);
+        }
+    }
+    sql_exec();
 }

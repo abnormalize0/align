@@ -4,6 +4,11 @@ $from = intval($_GET['from']);
 if (isset($_GET['select'])) {
     $select = $_GET['select'];
 }
+if (isset($_GET['where_sign'])) {
+    $where_sign = $_GET['where_sign'];
+    $where_column = $_GET['where_column'];
+    $where_compare = $_GET['where_compare'];
+}
 
 $dbname = $_COOKIE["database"];
 $host = $_COOKIE["host"];
@@ -50,6 +55,12 @@ for ($i; $i < count($select); $i++) {
     $sql = $sql.", ".$select[$i];
 }
 $sql = $sql." FROM `$table_title`";
+if (isset($where_sign)) {
+    $sql = $sql." WHERE ".$where_column[0].$where_sign[0]."'".$where_compare[0]."'";
+    for ($i = 1; $i < count($where_sign); $i++) {
+        $sql = $sql." AND ".$where_column[$i].$where_sign[$i].$where_compare[$i];
+    }
+}
 $result = mysqli_query($con,$sql);
 while($row = mysqli_fetch_array($result)) {
     echo "<tr>";
@@ -58,6 +69,7 @@ while($row = mysqli_fetch_array($result)) {
     }
     echo "</tr>";
 }
+echo $sql;
 
 mysqli_close($con);
 ?>

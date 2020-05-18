@@ -156,7 +156,7 @@ function add_block(b) {  //добавление элементов в2точка
           selected: null
         }
     } else if (this.id == "where_block") {
-        document.getElementById("field").insertAdjacentHTML('beforeend',"<div class=\"defaultclass\" style=\"background: white; left: "+ block_x_position +"px; top: " + block_y_position + "px; width: 250px;\" class=\"item\" id=\"block" + blocks + "\"> <h3>С условием:</h3>" + "<select> <option>Пункт 1</option> <option>Пункт 2</option> </select> <div id='connect_out" + blocks + "' style='right: -10px; top: 40px;' class='connect'> </div> <div id='connect_in" + blocks + "' style='left: -10px; top: 40px;' class='connect'> </div> </div>");
+        document.getElementById("field").insertAdjacentHTML('beforeend',"<div class=\"defaultclass\" style=\"background: white; left: "+ block_x_position +"px; top: " + block_y_position + "px; width: 250px;\" class=\"item\" id=\"block" + blocks + "\"> <h3>С условием:</h3>" + "<div id=where" + blocks + "> Соедините этот блок с одним из блоков \"Из таблицы\" для его использования. </div> <div id='connect_out" + blocks + "' style='right: -10px; top: 40px;' class='connect'> </div> <div id='connect_in" + blocks + "' style='left: -10px; top: 40px;' class='connect'> </div> </div>");
 
         document.getElementById("connect_out" + blocks).addEventListener("mousedown",draw_line.bind(null,blocks));
         document.getElementById("connect_out" + blocks).addEventListener("mouseover",colorfy_out.bind(null,blocks));
@@ -173,7 +173,11 @@ function add_block(b) {  //добавление элементов в2точка
           output_line: null,
           next_line: null,
           prev_line: null,
-          selected: null
+          table: null,
+          column: null,
+          sign: null,
+          compare: null,
+          tochange: 1
     }
 }
     
@@ -371,7 +375,7 @@ function mousedown(e) {
 
 
   function mouseup() {
-      moving = 0;
+    moving = 0;
     window.removeEventListener("mousemove", mousemove);
     window.removeEventListener("mouseup", mouseup);
   }
@@ -495,6 +499,8 @@ function draw_line(id,e) {
             sql_blocks[id].next_line = null;
             sql_blocks[id].output_line = null;
             drawing = 0;
+            where_check();
+            where_selection();
             sql_exec();
             return;
           }
@@ -524,8 +530,46 @@ function draw_line(id,e) {
 
           drawing = 0;
           console.log("-");
+          where_check();
+          where_selection();
           sql_exec();
     }
+}
+
+function where_check() {
+    for (let i = 0; i < blocks; i++) {
+        if (sql_blocks[i].purpose.localeCompare("where") == 0) {
+            let search = i;
+            while ((sql_blocks[search].prev_line != null) && (sql_blocks[search].prev_line != "")) {
+                search = sql_blocks[search].prev_line;
+                if (sql_blocks[search].purpose.localeCompare("from") == 0) {
+                    // alert (sql_blocks[search].selected);
+                    if ((sql_blocks[i].table != null) && (sql_blocks[i].table.localeCompare(sql_blocks[search].selected) == 0)) {
+                        sql_blocks[i].tochange = 0;
+                    } else {
+                        sql_blocks[i].table = sql_blocks[search].selected;
+                        sql_blocks[i].tochange = 1;
+                    }
+                    continue;
+                }
+            }
+            search = i;
+            while ((sql_blocks[search].next_line != null) && (sql_blocks[search].next_line != "")) {
+                search = sql_blocks[search].next_line;
+                if (sql_blocks[search].purpose.localeCompare("from") == 0) {
+                    // alert (search);
+                    if ((sql_blocks[i].table != null) && (sql_blocks[i].table.localeCompare(sql_blocks[search].selected) == 0)) {
+                        sql_blocks[i].tochange = 0;
+                    } else {
+                        sql_blocks[i].table = sql_blocks[search].selected;
+                        sql_blocks[i].tochange = 1;
+                    }
+                    continue;
+                }
+            }
+        }
+    }
+    where_fill();
 }
 
 function colorfy_out(id,e) {
