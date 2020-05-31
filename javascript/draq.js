@@ -432,17 +432,15 @@ function mousedown2(b) {  //добавление элементов в2точк�
           /*document.getElementById("connect_out" + i).removeEventListener("mousedown",draw_line.bind(null,i));
           document.getElementById("connect_out" + i).removeEventListener("mouseover",colorfy_out.bind(null,i));
           document.getElementById("connect_out" + i).removeEventListener("mouseout",uncolorfy_out.bind(null,i));*/
-          let insert = "<h3>Вывести данные в таблицу:</h3>" + "<select> <option> Не выбрано </option> ";
+          let insert = "<h3>Вывести данные в таблицу:</h3>" + "<select onchange=\"regular_select(this.value, " + i + ")\"> <option> Не выбрано </option> ";
           for (let j = 0; j < elements.length; j++) {
             //alert(elements[i].type);
               if (elements[j].type.localeCompare("table") == 0) {
-                console.log("block " + i + " element " + j + " type " + elements[i].type);
-                console.log("inside " + elements[j].text);
                   if (sql_blocks[i].selected == j) {
-                    insert = insert + "<option selected>";
+                    insert = insert + "<option value=\"" + j + "\" selected>";
                     console.log("status: inserted and selected");
                   } else {
-                    insert = insert + "<option>";
+                    insert = insert + "<option value=\"" + j + "\">";
                     console.log("status: inserted and not selected");
                   }
                   insert = insert + elements[j].text;

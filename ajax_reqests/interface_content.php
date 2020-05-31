@@ -9,6 +9,12 @@ if (isset($_GET['where_sign'])) {
     $where_column = $_GET['where_column'];
     $where_compare = $_GET['where_compare'];
 }
+if (isset($_GET['join_method'])) {
+    $join_method = $_GET['join_method'];
+    $to_table = $_GET['to_table'];
+    $from_table = $_GET['from_table'];
+    $join = $_GET['join'];
+}
 
 $dbname = $_COOKIE["database"];
 $host = $_COOKIE["host"];
@@ -55,6 +61,12 @@ for ($i; $i < count($select); $i++) {
     $sql = $sql.", ".$select[$i];
 }
 $sql = $sql." FROM `$table_title`";
+if (isset($join_method)) {
+    //$sql = $sql." WHERE ".$where_column[0].$where_sign[0]."'".$where_compare[0]."'";
+    for ($i = 0; $i < count($join_method); $i++) {
+        $sql = $sql." INNER JOIN ".$join[$i]." ON (".$from_table[$i]." = ".$to_table[$i] . ")";
+    }
+}
 if (isset($where_sign)) {
     $sql = $sql." WHERE ".$where_column[0].$where_sign[0]."'".$where_compare[0]."'";
     for ($i = 1; $i < count($where_sign); $i++) {
@@ -65,11 +77,11 @@ $result = mysqli_query($con,$sql);
 while($row = mysqli_fetch_array($result)) {
     echo "<tr>";
     for ($i = 0; $i < count($select); $i++) {
-        echo "<td>" . $row[$select[$i]] . "</td>";
+        echo "<td>" . $row[$i] . "</td>";
     }
     echo "</tr>";
 }
-echo $sql;
+//echo $sql;
 
 mysqli_close($con);
 ?>

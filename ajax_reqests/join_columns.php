@@ -16,7 +16,7 @@ echo $dbname;
 // Select column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='bill' AND TABLE_SCHEMA='carcompany'
 $headers_result = mysqli_query($con,$headers_sql);
 while($row = mysqli_fetch_array($headers_result)) {
-    echo "<option selected>" . $row['COLUMN_NAME'] . "</option>";
+    echo "<option value=\"`" . $dbname . "`.`" . $table_title ."`.`" . $row['COLUMN_NAME'] . "`\">" . $row['COLUMN_NAME'] . "</option>";
 }
 
 mysqli_close($con);

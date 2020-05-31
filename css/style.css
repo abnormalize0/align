@@ -123,6 +123,14 @@ html, body {
     left: 5px; top: 160px;
 }
 
+.join_block {
+    position: absolute;
+    height: 20px;
+    width: 180px;
+    background: orange;
+    left: 5px; top: 190px;
+}
+
 .table {
     position: absolute;
     height: 20px;

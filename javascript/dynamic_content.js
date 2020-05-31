@@ -1,5 +1,6 @@
 function regular_select(str,id) {
     set_selected(str, id);
+    join_arguments();
     sql_exec();
 }
 
@@ -7,6 +8,26 @@ function from_select(str,id) {
     select_columns(id, str);
     set_selected(str, id);
     where_check();
+    join_arguments();
+    sql_exec();
+}
+
+function join_method(str,id) {
+    //select_columns(id, str);
+    join_set_selected(str, id);
+    where_check();
+    join_arguments();
+    sql_exec();
+    join_explanation(str,id);
+    join_arguments(id);
+}
+
+function join_table_select(str,id) {
+    join_from_table(id, str)
+    join_columns(id, str);
+    set_selected(str, id);
+    where_check();
+    join_arguments();
     sql_exec();
 }
 
@@ -15,7 +36,7 @@ async function select_columns(id, str) {
         document.getElementById("select_columns" + id).remove();
     }
     let toinsert = document.getElementById("block" + id);
-    let insert_line = "<div id = \"select_columns" + id + "\"><br> Столбцы: <br> <select multiple size='5' id='select_columns_select" + id + "' onchange='reselect(" + id + ")'>";
+    let insert_line = "<div id = \"select_columns" + id + "\">Столбцы: <br> <select multiple size='5' id='select_columns_select" + id + "' onchange='reselect(" + id + ")'>";
     let table = tables_array[str];
     let response = await fetch("ajax_reqests/fetch_columns.php?send_table=" + table);
     if (response.ok) {
@@ -25,10 +46,30 @@ async function select_columns(id, str) {
     }
 
     toinsert.insertAdjacentHTML('beforeend',insert_line);
+    reselect(id);
+}
+
+async function join_columns(id, str) {
+    if (document.contains(document.getElementById("join_columns" + id))) {
+        document.getElementById("join_columns" + id).remove();
+    }
+    let toinsert = document.getElementById("block" + id);
+    let insert_line = "<div id = \"join_columns" + id + "\">Столбцы: <br> <select multiple size='5' id='select_columns_select" + id + "' onchange='join_reselect(" + id + ")'>";//check
+    let table = tables_array[str];
+    let response = await fetch("ajax_reqests/fetch_columns.php?send_table=" + table);
+    if (response.ok) {
+        let text = await response.text();
+        //document.getElementById(table_id).innerHTML = text;
+        insert_line = insert_line + text + "</select> </div>";
+    }
+    toinsert.insertAdjacentHTML('beforeend',insert_line);
+    join_reselect(id);
 }
 
 let selected_array = [[],[]];
+let join_selected_array = [[],[]];
 let selected_len = 0;
+let join_selected_len = 0;
 
 function reselect(id) {
     let opt;
@@ -48,13 +89,9 @@ function reselect(id) {
         selected_array[array_index][0] = id;
         
         if (opt.selected) {
-            //opts.push(opt);
             selected_array[array_index][counter] = opt.value;
             counter++;
-            //alert(opt.value);
         }
-        
-        
     }
     selected_array[array_index][1] = counter;
     if (selected_len == array_index) {
@@ -63,8 +100,127 @@ function reselect(id) {
     sql_exec();
 }
 
+function join_reselect(id) {
+    let opt;
+    let len = document.getElementById("select_columns_select" + id).options.length;
+    let array_index = join_selected_len;
+    for (let i = 0; i < join_selected_len; i++) {
+        if (join_selected_array[i][0] == id) {
+            array_index = i;
+            break;
+        }
+    }
+    join_selected_array[array_index] = [];
+    let counter = 2;
+    for (let i = 0; i < len; i++) {
+        opt = document.getElementById("select_columns_select" + id).options[i];
+        
+        join_selected_array[array_index][0] = id;
+        
+        if (opt.selected) {
+            join_selected_array[array_index][counter] = opt.value;
+            counter++;
+        }
+    }
+    join_selected_array[array_index][1] = counter;
+    if (join_selected_len == array_index) {
+        join_selected_len++;
+    }
+    sql_exec();
+}
+
 function set_selected(str, id) {
     sql_blocks[id].selected = str;
+}
+
+function join_set_selected(str, id) {
+    sql_blocks[id].join_method = str;
+}
+
+function join_explanation(str, id) {
+    let to_insert = document.getElementById("explanation" + id);
+    let insertion;
+    switch(str) {
+        case '1':
+            insertion = "<i>Внутреннее присоединение. Такое присоединение покажет нам данные из таблиц только если условие связывания соблюдается.</i>";
+            break;
+        case '2':
+            insertion = "<i>Внешнее присоединение «слева». Внешнее присоединение включает в себя результаты запроса и добавляются «неиспользованные» строки из одной из таблиц.</i>";
+            break;
+        case '3':
+            insertion = "<i>Внешнее присоединение «справа». Внешнее присоединение включает в себя результаты запроса и добавляются «неиспользованные» строки из одной из таблиц.</i>";
+            break;
+        case '4':
+            insertion = "<i>Объединение «левого» и «правого» внешниего присоединения. Внешнее присоединение включает в себя результаты запроса и добавляются «неиспользованные» строки из из таблиц.</i>";
+            break;
+        case '5':
+            insertion = "<i>Внешнее присоединение «слева», включающее в себя только «неиспользованные» строки из одной из таблиц.</i>";
+            break;
+        case '6':
+            insertion = "<i>Внешнее присоединение «справа», включающее в себя только «неиспользованные» строки из одной из таблиц.</i>";
+            break;
+        case '7':
+            insertion = "<i>Объединение «левого» и «правого» внешниего присоединения, включающее в себя только «неиспользованные» строки из таблиц.</i>";
+            break;
+        default:
+            insertion = "";
+            break;
+    }
+    to_insert.innerHTML = insertion;
+}
+
+function join_arguments() {
+    for(let i = 0; i < blocks; i++) {
+        if(sql_blocks[i].purpose.localeCompare("join") == 0) {
+            let search = i;
+            let input = "К таблице: <select onchange=\"join_to_table(" + i + ", this.value);\"><option value=\"\">Не выбрано</option>";
+            //let insert_line = "Правый аргумент: <select><option>Не выбрано</option>"
+            while(((sql_blocks[search].purpose).localeCompare("from") != 0)&&(sql_blocks[search].prev_join_line != null)&&(sql_blocks[search].prev_join_line != "")) {
+                search = sql_blocks[search].prev_join_line;
+                input = input + "<option>" + tables_array[sql_blocks[search].selected] + "</option>";
+
+                // let response = await fetch("ajax_reqests/join_columns.php?send_table=" + tables_array[sql_blocks[search].selected]);
+                // if (response.ok) {
+                //     let text = await response.text();
+                //     insert_line = insert_line + text;
+                // }
+            
+            }
+            //insert_line = insert_line + "</select>";
+            input = input + "</select>";
+            if(document.getElementById("join_to" + i).innerHTML.localeCompare(input) != 0) {
+                document.getElementById("join_to" + i).innerHTML = input;
+                join_to_table(i,tables_array[sql_blocks[i].join_to]);
+                //document.getElementById("right_join" + i).innerHTML = insert_line;
+            }
+        }
+    }
+}
+
+async function join_to_table(id,str) {
+    let insert_line = "Правый аргумент: <select onchange=\"sql_blocks[" + id + "].to_table = this.value; sql_exec();\"><option value=\"\">Не выбрано</option>";
+    if ((str==null)||(str=="")) {
+
+    } else {
+        let response = await fetch("ajax_reqests/join_columns.php?send_table=" + str);
+        if (response.ok) {
+            let text = await response.text();
+            insert_line = insert_line + text;
+        }
+    }
+    insert_line = insert_line + "</select>";
+    document.getElementById("right_join" + id).innerHTML = insert_line;
+}
+
+async function join_from_table(id,str) {
+    let insert_line = "Левый агрумент: <select onchange=\"sql_blocks[" + id + "].from_table = this.value; sql_exec();\"><option value=\"\">Не выбрано</option>";
+    let response = await fetch("ajax_reqests/join_columns.php?send_table=" + tables_array[str]);
+    if (response.ok) {
+        let text = await response.text();
+        insert_line = insert_line + text;
+    }
+    insert_line = insert_line + "</select>";
+    document.getElementById("left_join" + id).innerHTML = insert_line;
 }
 
 function clearing() {
@@ -77,19 +233,17 @@ function clearing() {
 }
 
 async function sql_exec() {
+    console.log("EXEC");
     clearing();
     for (let i = 0; i < blocks; i++) {
         //await sleep(1000);
         if (sql_blocks[i].purpose.localeCompare("select") == 0) {
-            console.log(sql_blocks[i].purpose);
             let cur_block = i;
             let wtite_to = sql_blocks[cur_block].selected;
             if ((wtite_to == "")||(wtite_to == null)) {
                 continue;
             }
             table_id = "el" + wtite_to;
-            
-            let write_from = -1;
             let request = "";
             let number_of_where = 0;
             while (sql_blocks[cur_block].next_line != null) {
@@ -107,11 +261,34 @@ async function sql_exec() {
                                 for (let j = 2; j < selected_array[i][1]; j++) {
                                     //alert(selected_array[i][j]);
                                     //alert (request);
-                                    request = request + "select[]=" + selected_array[i][j] + "&";
+                                    request = request + "select[]=`" + tables_array[sql_blocks[cur_block].selected] + "`.`" + selected_array[i][j] + "`&";
                                 }
                             }
                         }
                         document.getElementById("block" + cur_block).style.boxShadow = "none";
+                        let go_down = cur_block;
+                        while (sql_blocks[go_down].next_join_line != null) {
+                            go_down = sql_blocks[go_down].next_join_line;
+                            // console.log("join_method " + sql_blocks[go_down].join_method);
+                            // console.log("to_table " + sql_blocks[go_down].to_table);
+                            // console.log("from_table " + sql_blocks[go_down].from_table);
+                            // console.log("join " + tables_array[sql_blocks[go_down].selected]);
+                            //if ((sql_blocks[go_down].join_method != null)&&(sql_blocks[go_down].to_table != null)&&(sql_blocks[go_down].from_table != null)) {
+                            if ((sql_blocks[go_down].join_method != "")&&(sql_blocks[go_down].to_table != "")&&(sql_blocks[go_down].from_table != "")) {
+                                request = request + "join_method[]=" + sql_blocks[go_down].join_method + "&";
+                                request = request + "to_table[]=" + sql_blocks[go_down].to_table + "&";
+                                request = request + "from_table[]=" + sql_blocks[go_down].from_table + "&";
+                                request = request + "join[]=" + tables_array[sql_blocks[go_down].selected] + "&";
+                                //request = request + "select[]=" + sql_blocks[go_down].from_table + "&";
+                                for (let i = 0; i < join_selected_len; i++) {
+                                    if (join_selected_array[i][0] == go_down) {
+                                        for (let j = 2; j < join_selected_array[i][1]; j++) {
+                                            request = request + "select[]=`" + tables_array[sql_blocks[go_down].selected] + "`.`" + join_selected_array[i][j] + "`&";
+                                        }
+                                    }
+                                }
+                            }
+                        } //join_connect_out
                     }
                 } else if (sql_blocks[cur_block].purpose.localeCompare("where") == 0) {
                     if ((sql_blocks[cur_block].sign != null)&&(sql_blocks[cur_block].sign != "")&&(sql_blocks[cur_block].column != null)&&(sql_blocks[cur_block].column != "")&&(sql_blocks[cur_block].compare != null)&&(sql_blocks[cur_block].compare != "")) {
@@ -172,10 +349,8 @@ function where_selection() {
             sql_blocks[id].column = select.options[select.selectedIndex].value;
             let search = document.getElementById( "where_columns_search" + id );
             sql_blocks[id].compare = search.value;
-            console.log(sql_blocks[id].sign);
-            console.log(sql_blocks[id].column);
-            console.log(sql_blocks[id].compare);
         }
     }
+    join_arguments();
     sql_exec();
 }
