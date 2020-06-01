@@ -16,13 +16,13 @@ function join_method(str,id) {
     //select_columns(id, str);
     join_set_selected(str, id);
     where_check();
-    join_arguments();
     sql_exec();
     join_explanation(str,id);
-    join_arguments(id);
+    join_arguments();
 }
 
 function join_table_select(str,id) {
+    sql_blocks[id].from_table = null;
     join_from_table(id, str)
     join_columns(id, str);
     set_selected(str, id);
@@ -183,14 +183,57 @@ function join_arguments() {
                 document.getElementById("join_to" + i).innerHTML = input;
                 join_to_table(i,tables_array[sql_blocks[i].join_to]);
             }
+            let loop = true;
+            search = i;
+            let allowed = [...tables_array];
+            if (sql_blocks[search].prev_join_line != null) {
+                search = sql_blocks[search].prev_join_line;
+            } else {
+                loop = false;
+            }
+            while(loop) {
+                if (sql_blocks[search].purpose.localeCompare("from") == 0) {
+                    loop = false;
+                    if ((sql_blocks[search].selected != null)&&(sql_blocks[search].selected != "")) {
+                        allowed[sql_blocks[search].selected] = null;
+                    }
+                } else if (sql_blocks[search].prev_join_line != null) {
+                    if ((sql_blocks[search].selected != null)&&(sql_blocks[search].selected != "")) {
+                        allowed[sql_blocks[search].selected] = null;
+                    }
+                    search = sql_blocks[search].prev_join_line;
+                } else {
+                    loop = false;
+                }
+            }
+            let insert = "Таблицу: <select onchange=\"join_table_select(this.value, " + i + ")\"> <option value=\"\"> Не выбрано </option>";
+            let rewrite = true;
+            for (let j = 0; j < allowed.length; j++) {
+                if (allowed[j] != null) {
+                    if ((j == sql_blocks[i].selected)&&(sql_blocks[i].selected != "")) {
+                        rewrite = false;
+                        insert = insert + "<option selected value=\"" + j + "\">";
+                    } else {
+                        insert = insert + "<option value=\"" + j + "\">";
+                    }
+                    insert = insert + allowed[j];
+                    insert = insert + "</option>";
+                }
+            }
+            insert = insert + "</select>";
+            if(rewrite) {
+                sql_blocks[i].selected = null;
+                
+            }
+            document.getElementById("join_from" + i).innerHTML = insert;
         }
     }
 }
 
 async function join_to_table(id,str) {
-    let insert_line = "Правый аргумент: <select onchange=\"sql_blocks[" + id + "].to_table = this.value; sql_exec();\"><option value=\"\">Не выбрано</option>";
+    let insert_line = "Правый аргумент: <select onchange=\"sql_blocks[" + id + "].to_table = this.value; sql_exec(); where_check();\"><option value=\"\">Не выбрано</option>";
     if ((str==null)||(str=="")) {
-
+        
     } else {
         let response = await fetch("ajax_reqests/join_columns.php?send_table=" + str);
         if (response.ok) {
@@ -198,12 +241,18 @@ async function join_to_table(id,str) {
             insert_line = insert_line + text;
         }
     }
+    sql_blocks[id].to_table = null;
     insert_line = insert_line + "</select>";
     document.getElementById("right_join" + id).innerHTML = insert_line;
+    where_check();
+    sql_exec();
 }
 
 async function join_from_table(id,str) {
-    let insert_line = "Левый агрумент: <select onchange=\"sql_blocks[" + id + "].from_table = this.value; sql_exec();\"><option value=\"\">Не выбрано</option>";
+    if (str == "") {
+        sql_blocks[id].from_table = null;
+    }
+    let insert_line = "Левый агрумент: <select onchange=\"sql_blocks[" + id + "].from_table = this.value; sql_exec(); where_check();\"><option value=\"\">Не выбрано</option>";
     let response = await fetch("ajax_reqests/join_columns.php?send_table=" + tables_array[str]);
     if (response.ok) {
         let text = await response.text();
@@ -256,7 +305,7 @@ async function sql_exec() {
                         let go_down = cur_block;
                         while (sql_blocks[go_down].next_join_line != null) {
                             go_down = sql_blocks[go_down].next_join_line;
-                            if ((sql_blocks[go_down].join_method != "")&&(sql_blocks[go_down].to_table != "")&&(sql_blocks[go_down].from_table != "")) {
+                            if ((sql_blocks[go_down].join_method != null)&&(sql_blocks[go_down].to_table != null)&&(sql_blocks[go_down].from_table != null)&&(sql_blocks[go_down].join_method != "")&&(sql_blocks[go_down].to_table != "")&&(sql_blocks[go_down].from_table != "")) {
                                 request = request + "join_method[]=" + sql_blocks[go_down].join_method + "&";
                                 request = request + "to_table[]=" + sql_blocks[go_down].to_table + "&";
                                 request = request + "from_table[]=" + sql_blocks[go_down].from_table + "&";
@@ -303,10 +352,9 @@ async function where_fill() {
             if ((document.contains(document.getElementById("where" + id))) && (sql_blocks[id].tochange == 0)) {
                 continue;
             }
-            if (document.contains(document.getElementById("where" + id))) {
-                document.getElementById("where" + id).remove();
-            }
-            let toinsert = document.getElementById("block" + id);
+            // if (document.contains(document.getElementById("where" + id))) {
+            //     document.getElementById("where" + id).remove();
+            // }
             let insert_line = "<div id = \"where" + id + "\">&nbspСтолбец:&nbsp&nbsp&nbsp&nbsp&nbspЗнак:&nbsp&nbsp&nbsp&nbsp&nbsp&nbspЗначение: <br> <select style=\"width: 70px;\" id='where_columns_select" + id + "' onchange='where_selection(" + id + ")'>";
             //let table = tables_array[sql_blocks[id].table[0]];
             let request = "";
@@ -315,26 +363,30 @@ async function where_fill() {
             }
             request = request + "id=" + id;
             let response = await fetch("ajax_reqests/where_content.php?" + request);
-            alert(request);
             if (response.ok) {
                 let text = await response.text();
                 //document.getElementById(table_id).innerHTML = text;
                 insert_line = insert_line + text + "</div>";
             }
-        
-            toinsert.insertAdjacentHTML('beforeend',insert_line);
+            let toinsert = document.getElementById("where" + id);
+            toinsert.innerHTML = insert_line;
+            sql_blocks[id].connected = true;
+        } else if (sql_blocks[id].purpose.localeCompare("where") == 0) {
+            let toinsert = document.getElementById("where" + id);
+            toinsert.innerHTML = "Соедините этот блок с одним из блоков \"Из таблицы\" для его использования.";
+            sql_blocks[id].connected = false;
         }
     }
 }
 
 function where_selection() {
     for (let id = 0; id < blocks; id++) {
-        if ((sql_blocks[id].purpose.localeCompare("where") == 0)) {
-            let sign = document.getElementById( "where_columns_sign" + id );
+        let sign = document.getElementById( "where_columns_sign" + id );
+        let select = document.getElementById( "where_columns_select" + id );
+        let search = document.getElementById( "where_columns_search" + id );
+        if (((sql_blocks[id].purpose.localeCompare("where") == 0))&&(sql_blocks[id].connected)&&(document.contains(sign))&&(document.contains(select))&&(document.contains(search))) {
             sql_blocks[id].sign = sign.options[sign.selectedIndex].value;
-            let select = document.getElementById( "where_columns_select" + id );
             sql_blocks[id].column = select.options[select.selectedIndex].value;
-            let search = document.getElementById( "where_columns_search" + id );
             sql_blocks[id].compare = search.value;
         }
     }

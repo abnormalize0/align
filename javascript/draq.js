@@ -429,28 +429,19 @@ function mousedown2(b) {  //добавление элементов в2точк�
       document.getElementById("tree").insertAdjacentHTML('beforeend', "<div id = \"tree" + count + "\">> Таблица " + count + "</div>");
 
       for (let i = 0; i < blocks; i++) {
-          /*document.getElementById("connect_out" + i).removeEventListener("mousedown",draw_line.bind(null,i));
-          document.getElementById("connect_out" + i).removeEventListener("mouseover",colorfy_out.bind(null,i));
-          document.getElementById("connect_out" + i).removeEventListener("mouseout",uncolorfy_out.bind(null,i));*/
           let insert = "<h3>Вывести данные в таблицу:</h3>" + "<select onchange=\"regular_select(this.value, " + i + ")\"> <option> Не выбрано </option> ";
           for (let j = 0; j < elements.length; j++) {
-            //alert(elements[i].type);
               if (elements[j].type.localeCompare("table") == 0) {
                   if (sql_blocks[i].selected == j) {
                     insert = insert + "<option value=\"" + j + "\" selected>";
-                    console.log("status: inserted and selected");
                   } else {
                     insert = insert + "<option value=\"" + j + "\">";
-                    console.log("status: inserted and not selected");
                   }
                   insert = insert + elements[j].text;
                   insert = insert + "</option>";
               }
           }
           insert = insert + "</select> <div id='connect_out" + i + "' style='right: -10px; top: 40px;' class='connect'> </div>";
-          //alert("connect_out" + i);
-          
-          //document.getElementById("field").insertAdjacentHTML('beforeend',insert);
           if(document.getElementById("block" + i).innerHTML.indexOf("<h3>Вывести данные в таблицу:</h3>") > -1) {           //вот для этой штуки неплохо бы ещё структуру все равно создать
               document.getElementById("block" + i).innerHTML = insert;
               document.getElementById("connect_out" + i).addEventListener("mousedown",draw_line.bind(null,i));
@@ -466,7 +457,6 @@ function mousedown2(b) {  //добавление элементов в2точк�
       drop_shadow();
       if (cur_page != elements[elemid].page) {
         goto_page(elements[elemid].page)
-        //redraw_elements(elements[elemid].page);
         cur_page = elements[elemid].page;
       }
       document.getElementById("textfieldproperties").style.visibility = "hidden";

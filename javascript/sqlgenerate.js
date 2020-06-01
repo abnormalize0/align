@@ -97,7 +97,7 @@ where_block.addEventListener("mousedown", add_block);
 join_block.addEventListener("mousedown", add_block);
 order_block.addEventListener("mousedown", add_block);
 
-let blocks = 0
+let blocks = 0;
 let lines = 0;
 
 function add_block(b) {  //добавление элементов в2точка0
@@ -192,19 +192,20 @@ function add_block(b) {  //добавление элементов в2точка
           column: null,
           sign: null,
           compare: null,
-          tochange: 1
+          tochange: 1,
+          connected: false
         }
     } else if (this.id == "join_block") {
         let insert = "<div class=\"defaultclass\" style=\"background: white; left: "+ block_x_position +"px; top: " + block_y_position + "px; width: 250px;\" class=\"item\" id=\"block" + blocks + "\"> <h3>Присоеденить таблицу:</h3>";
         insert = insert + "Методом:<select onchange=\"join_method(this.value, " + blocks + ")\"><option selected value=\"\">Не выбрано</option><option value=1>Пересечение</option><option value=2>Присоединение слева</option><option value=3>Присоединение справа</option><option value=4>Полное множество</option><option value=5>Левое подмножество</option><option value=6>Правое подмножество</option><option value=7>Все кроме пересечения</option></select>";
         insert = insert + "<div id=\"explanation" + blocks + "\"></div>"
-        insert = insert + "Таблицу: <select onchange=\"join_table_select(this.value, " + blocks + ")\"> <option value=\"\"> Не выбрано </option>";
+        insert = insert + "<div id=\"join_from" + blocks + "\">Таблицу: <select onchange=\"join_table_select(this.value, " + blocks + ")\"> <option value=\"\"> Не выбрано </option>";
         for (let i = 0; i < tables_array.length; i++) {
             insert = insert + "<option value=\"" + i + "\">";
             insert = insert + tables_array[i];
             insert = insert + "</option>";
         }
-        insert = insert + "</select><div id='join_to" + blocks + "'> К таблице: <select><option value=\"\">Не выбрано</option></select></div>";
+        insert = insert + "</select></div><div id='join_to" + blocks + "'> К таблице: <select><option value=\"\">Не выбрано</option></select></div>";
         insert = insert + "<div id='join_connect_out" + blocks + "' style='bottom: -10px; right: 115px;' class='join_connect'> </div>";
         insert = insert + "<div id='left_join" + blocks + "'>Левый аргумент: <select><option value=\"\">Не выбрано</option></select></div>";
         insert = insert + "<div id='right_join" + blocks + "'>Правый аргумент: <select><option value=\"\">Не выбрано</option></select></div>";
@@ -529,7 +530,6 @@ document.onkeydown = function (evt) {
             let x = parseInt(document.getElementById("block" + cur_tab).style.left.replace('px','')) - document.documentElement.clientWidth / 2 + document.documentElement.clientWidth/100 * 15 + 250/2;
             let y = parseInt(document.getElementById("block" + cur_tab).style.top.replace('px','')) - document.documentElement.clientHeight / 2 + document.documentElement.clientHeight/100 * 2 + 100/2;
             document.getElementById('field').scroll(x, y);
-            console.log(x);   
         } else {
 
         }
@@ -627,8 +627,6 @@ function draw_line(id,e) {
             drawing = 0;
             where_check();
             where_selection();
-            join_arguments();
-            sql_exec();
             return;
           }
           exist = sql_blocks[cur_hover].prev_line;
@@ -659,8 +657,6 @@ function draw_line(id,e) {
           console.log("-");
           where_check();
           where_selection();
-          join_arguments();
-          sql_exec();
     }
 }
 
@@ -748,8 +744,6 @@ function join_draw_line(id,e) {
             join_drawing = 0;
             where_check();
             where_selection();
-            join_arguments();
-            sql_exec();
             return;
           }
           exist = sql_blocks[cur_hover].prev_join_line;
@@ -780,38 +774,41 @@ function join_draw_line(id,e) {
           console.log("-");
           where_check();
           where_selection();
-          join_arguments();
-          sql_exec();
     }
-    //alert(sql_blocks[id].next_join_line);
-    //alert(id);
 }
 
 function where_check() {
     for (let i = 0; i < blocks; i++) {
         if (sql_blocks[i].purpose.localeCompare("where") == 0) {
             let search = i;
+            if(sql_blocks[search].prev_line == null) {
+                sql_blocks[i].table = [];
+                continue;
+            }
             while ((sql_blocks[search].prev_line != null) && (sql_blocks[search].prev_line != "")) {
                 search = sql_blocks[search].prev_line;
                 if (sql_blocks[search].purpose.localeCompare("from") == 0) {
-                    // alert (sql_blocks[search].selected);
-                    sql_blocks[i].tochange = 1;
-                    sql_blocks[i].table = [];
+                    sql_blocks[i].tochange = 0;
+                    //sql_blocks[i].table = [];
+                    let compare = [];
                     let counter = 0;
                     let loop = true;
                     while(loop) {
-                        if ((sql_blocks[i].table[counter] != null) && (sql_blocks[i].table[counter].localeCompare(sql_blocks[search].selected) == 0)) {
-                            //sql_blocks[i].tochange = 0;
-                        } else if ((sql_blocks[search].selected != null)&&(sql_blocks[search].selected != "")) {
-                            sql_blocks[i].table[counter] = sql_blocks[search].selected;
-                            sql_blocks[i].tochange = 1;
-                            counter++;
+                        if ((sql_blocks[search].purpose.localeCompare("join") == 0)&&(sql_blocks[search].selected != null)&&(sql_blocks[search].selected != "")&&(sql_blocks[search].join_method != null)&&(sql_blocks[search].to_table != null)&&(sql_blocks[search].from_table != null)&&(sql_blocks[search].join_method != "")&&(sql_blocks[search].to_table != "")&&(sql_blocks[search].from_table != "")) {
+                            compare[counter] = sql_blocks[search].selected;
+                        } else if ((sql_blocks[search].purpose.localeCompare("join") != 0)&&(sql_blocks[search].selected != null)&&(sql_blocks[search].selected != "")) {
+                            compare[counter] = sql_blocks[search].selected;
                         }
                         if (sql_blocks[search].next_join_line == null) {
                             loop = false;
                         } else {
                             search = sql_blocks[search].next_join_line;
                         }
+                        counter++;
+                    }
+                    if(!(compare.equals(sql_blocks[i].table))) {
+                        sql_blocks[i].table = [...compare];
+                        sql_blocks[i].tochange = 1;
                     }
                     
                     continue;
@@ -821,7 +818,6 @@ function where_check() {
             while ((sql_blocks[search].next_line != null) && (sql_blocks[search].next_line != "")) {
                 search = sql_blocks[search].next_line;
                 if (sql_blocks[search].purpose.localeCompare("from") == 0) {
-                    // alert (search);
                     if ((sql_blocks[i].table[0] != null) && (sql_blocks[i].table[0].localeCompare(sql_blocks[search].selected) == 0)) {
                         sql_blocks[i].tochange = 0;
                     } else {
@@ -882,4 +878,29 @@ function colorfy_join_in(id,e) {
 function uncolorfy_join_in(id,e) {
     document.getElementById("join_connect_in" + id).style.backgroundColor = "orange";
     cur_hover = -1;
+}
+
+
+Array.prototype.equals = function (array) {
+    // if the other array is a falsy value, return
+    if (!array)
+        return false;
+
+    // compare lengths - can save a lot of time 
+    if (this.length != array.length)
+        return false;
+
+    for (var i = 0, l=this.length; i < l; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].equals(array[i]))
+                return false;       
+        }           
+        else if (this[i] != array[i]) { 
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;   
+        }           
+    }       
+    return true;
 }

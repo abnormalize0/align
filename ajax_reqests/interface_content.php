@@ -81,7 +81,7 @@ while($row = mysqli_fetch_array($result)) {
     }
     echo "</tr>";
 }
-//echo $sql;
+echo $sql;
 
 mysqli_close($con);
 ?>
