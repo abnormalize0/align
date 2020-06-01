@@ -67,6 +67,7 @@
             <div id="from_block" class="button_baton"> Из таблицы </div>
             <div id="where_block" class="editabletext"> С условием, что </div>
             <div id="join_block" class="join_block"> Присоединить таблицу </div>
+            <div id="order_block" class="order_block"> Сортировать по </div>
             <div class="field" id="field" style="overflow-y: scroll; overflow-x: scroll;  overflow: hidden">
                 <button style="top: 200000px; left: 200000px; position: absolute;"></button>
             </div>

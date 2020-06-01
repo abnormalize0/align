@@ -90,10 +90,12 @@ let select_block = document.getElementById("select_block");  //добавлен�
 let from_block = document.getElementById("from_block");
 let where_block = document.getElementById("where_block");
 let join_block = document.getElementById("join_block");
+let order_block = document.getElementById("order_block");
 select_block.addEventListener("mousedown", add_block);
 from_block.addEventListener("mousedown", add_block);
 where_block.addEventListener("mousedown", add_block);
 join_block.addEventListener("mousedown", add_block);
+order_block.addEventListener("mousedown", add_block);
 
 let blocks = 0
 let lines = 0;
@@ -186,7 +188,7 @@ function add_block(b) {  //добавление элементов в2точка
           output_line: null,
           next_line: null,
           prev_line: null,
-          table: null,
+          table: [],
           column: null,
           sign: null,
           compare: null,
@@ -233,6 +235,8 @@ function add_block(b) {  //добавление элементов в2точка
             to_table: "",
             from_table: ""
         }
+    } else if (this.id == "order_block") {
+        alert("waw");
     }
     
     function block_move(id,e) {
@@ -791,12 +795,25 @@ function where_check() {
                 search = sql_blocks[search].prev_line;
                 if (sql_blocks[search].purpose.localeCompare("from") == 0) {
                     // alert (sql_blocks[search].selected);
-                    if ((sql_blocks[i].table != null) && (sql_blocks[i].table.localeCompare(sql_blocks[search].selected) == 0)) {
-                        sql_blocks[i].tochange = 0;
-                    } else {
-                        sql_blocks[i].table = sql_blocks[search].selected;
-                        sql_blocks[i].tochange = 1;
+                    sql_blocks[i].tochange = 1;
+                    sql_blocks[i].table = [];
+                    let counter = 0;
+                    let loop = true;
+                    while(loop) {
+                        if ((sql_blocks[i].table[counter] != null) && (sql_blocks[i].table[counter].localeCompare(sql_blocks[search].selected) == 0)) {
+                            //sql_blocks[i].tochange = 0;
+                        } else if ((sql_blocks[search].selected != null)&&(sql_blocks[search].selected != "")) {
+                            sql_blocks[i].table[counter] = sql_blocks[search].selected;
+                            sql_blocks[i].tochange = 1;
+                            counter++;
+                        }
+                        if (sql_blocks[search].next_join_line == null) {
+                            loop = false;
+                        } else {
+                            search = sql_blocks[search].next_join_line;
+                        }
                     }
+                    
                     continue;
                 }
             }
@@ -805,10 +822,10 @@ function where_check() {
                 search = sql_blocks[search].next_line;
                 if (sql_blocks[search].purpose.localeCompare("from") == 0) {
                     // alert (search);
-                    if ((sql_blocks[i].table != null) && (sql_blocks[i].table.localeCompare(sql_blocks[search].selected) == 0)) {
+                    if ((sql_blocks[i].table[0] != null) && (sql_blocks[i].table[0].localeCompare(sql_blocks[search].selected) == 0)) {
                         sql_blocks[i].tochange = 0;
                     } else {
-                        sql_blocks[i].table = sql_blocks[search].selected;
+                        sql_blocks[i].table[0] = sql_blocks[search].selected;
                         sql_blocks[i].tochange = 1;
                     }
                     continue;
