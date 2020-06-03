@@ -237,7 +237,29 @@ function add_block(b) {  //добавление элементов в2точка
             from_table: ""
         }
     } else if (this.id == "order_block") {
-        alert("waw");
+        document.getElementById("field").insertAdjacentHTML('beforeend',"<div class=\"defaultclass\" style=\"background: white; left: "+ block_x_position +"px; top: " + block_y_position + "px; width: 250px;\" class=\"item\" id=\"block" + blocks + "\"> <h3>Отсортированные:</h3>" + "<div id=order" + blocks + "> Соедините этот блок с одним из блоков \"Из таблицы\" для его использования. </div> <div id='connect_out" + blocks + "' style='right: -10px; top: 40px;' class='connect'> </div> <div id='connect_in" + blocks + "' style='left: -10px; top: 40px;' class='connect'> </div> </div>");
+
+        document.getElementById("connect_out" + blocks).addEventListener("mousedown",draw_line.bind(null,blocks));
+        document.getElementById("connect_out" + blocks).addEventListener("mouseover",colorfy_out.bind(null,blocks));
+        document.getElementById("connect_out" + blocks).addEventListener("mouseout",uncolorfy_out.bind(null,blocks));
+
+        document.getElementById("connect_in" + blocks).addEventListener("mousedown",block_move.bind(null,blocks));
+        document.getElementById("connect_in" + blocks).addEventListener("mouseover",colorfy_in.bind(null,blocks));
+        document.getElementById("connect_in" + blocks).addEventListener("mouseout",uncolorfy_in.bind(null,blocks));
+
+        sql_blocks[blocks] = {
+          id: "block" + blocks,
+          purpose: "order",
+          input_line: null,
+          output_line: null,
+          next_line: null,
+          prev_line: null,
+          table: [],
+          column: null,
+          tochange: 1,
+          connected: false,
+          direction: 1
+        }
     }
     
     function block_move(id,e) {
@@ -779,7 +801,7 @@ function join_draw_line(id,e) {
 
 function where_check() {
     for (let i = 0; i < blocks; i++) {
-        if (sql_blocks[i].purpose.localeCompare("where") == 0) {
+        if ((sql_blocks[i].purpose.localeCompare("where") == 0)||(sql_blocks[i].purpose.localeCompare("order") == 0)) {
             let exit = false;
             let search = i;
             // if(sql_blocks[search].prev_line == null) {
@@ -811,14 +833,12 @@ function where_check() {
                         sql_blocks[i].table = [...compare];
                         sql_blocks[i].tochange = 1;
                     }
-                    alert("forth");
                     exit = true;
                 }
             }
             if(exit) {
                 continue;
             }
-            alert("what");
             search = i;
             while ((sql_blocks[search].next_line != null) && (sql_blocks[search].next_line != "")) {
                 search = sql_blocks[search].next_line;
@@ -845,7 +865,6 @@ function where_check() {
                         sql_blocks[i].table = [...compare];
                         sql_blocks[i].tochange = 1;
                     }
-                    alert("back");
                     exit = true;
                 }
             }
@@ -856,6 +875,7 @@ function where_check() {
         }
     }
     where_fill();
+    order_fill();
 }
 
 function colorfy_out(id,e) {
@@ -908,23 +928,18 @@ function uncolorfy_join_in(id,e) {
 
 
 Array.prototype.equals = function (array) {
-    // if the other array is a falsy value, return
     if (!array)
         return false;
 
-    // compare lengths - can save a lot of time 
     if (this.length != array.length)
         return false;
 
     for (var i = 0, l=this.length; i < l; i++) {
-        // Check if we have nested arrays
         if (this[i] instanceof Array && array[i] instanceof Array) {
-            // recurse into the nested arrays
             if (!this[i].equals(array[i]))
                 return false;       
         }           
         else if (this[i] != array[i]) { 
-            // Warning - two different object instances will never be equal: {x:20} != {x:20}
             return false;   
         }           
     }       

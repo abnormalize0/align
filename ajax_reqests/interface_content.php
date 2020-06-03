@@ -15,6 +15,10 @@ if (isset($_GET['join_method'])) {
     $from_table = $_GET['from_table'];
     $join = $_GET['join'];
 }
+if (isset($_GET['order_direction'])) {
+    $order_direction = $_GET['order_direction'];
+    $order_column = $_GET['order_column'];
+}
 
 $dbname = $_COOKIE["database"];
 $host = $_COOKIE["host"];
@@ -71,6 +75,15 @@ if (isset($where_sign)) {
     $sql = $sql." WHERE ".$where_column[0].$where_sign[0]."'".$where_compare[0]."'";
     for ($i = 1; $i < count($where_sign); $i++) {
         $sql = $sql." AND ".$where_column[$i].$where_sign[$i].$where_compare[$i];
+    }
+}
+
+if (isset($order_direction)) {
+    $sql = $sql. " ORDER BY " . $order_column;
+    if ($order_direction == 1) {
+        $sql = $sql. " ASC";
+    } else {
+        $sql = $sql. " DESC";
     }
 }
 $result = mysqli_query($con,$sql);

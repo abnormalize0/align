@@ -283,7 +283,7 @@ async function sql_exec() {
             }
             table_id = "el" + wtite_to;
             let request = "";
-            let number_of_where = 0;
+            let order_found = false;
             while (sql_blocks[cur_block].next_line != null) {
                 cur_block = sql_blocks[cur_block].next_line;
                 if (sql_blocks[cur_block].purpose.localeCompare("from") == 0) {
@@ -325,7 +325,16 @@ async function sql_exec() {
                         request = request + "where_sign[]=" + sql_blocks[cur_block].sign + "&";
                         request = request + "where_column[]=" + sql_blocks[cur_block].column + "&";
                         request = request + "where_compare[]=" + sql_blocks[cur_block].compare + "&";
-                        number_of_where++;
+                    }
+                } else if (sql_blocks[cur_block].purpose.localeCompare("order") == 0) {
+                    if (order_found) {
+                        document.getElementById("block" + cur_block).style.boxShadow = "0px 0px 5px 5px red";
+                    } else {
+                        if ((sql_blocks[cur_block].column != null)&&(sql_blocks[cur_block].column != "")&&(sql_blocks[cur_block].direction != null)&&(sql_blocks[cur_block].direction != "")) {
+                            request = request + "order_direction=" + sql_blocks[cur_block].direction + "&";
+                            request = request + "order_column=" + sql_blocks[cur_block].column + "&";
+                        }
+                        order_found = true;
                     }
                 }
             }
@@ -379,6 +388,36 @@ async function where_fill() {
     }
 }
 
+async function order_fill() {
+    for (let id = 0; id < blocks; id++) {
+        if ((sql_blocks[id].purpose.localeCompare("order") == 0) && (sql_blocks[id].table[0] != null) && (sql_blocks[id].table[0] != "")) {
+            if ((document.contains(document.getElementById("order" + id))) && (sql_blocks[id].tochange == 0)) {
+                continue;
+            }
+            let insert_line = "<div id = \"order" + id + "\">&nbsp&nbsp&nbsp&nbsp&nbspСтолбец:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspВ порядке:<br> <select style=\"width: 105px;\" id='order_columns_select" + id + "' onchange='where_selection(" + id + ")'>";
+            //let table = tables_array[sql_blocks[id].table[0]];
+            let request = "";
+            for(let i = 0; i < sql_blocks[id].table.length; i++) {
+                request = request + "send_table[]=" + tables_array[sql_blocks[id].table[i]] + "&";
+            }
+            request = request + "id=" + id;
+            let response = await fetch("ajax_reqests/order_content.php?" + request);
+            if (response.ok) {
+                let text = await response.text();
+                //document.getElementById(table_id).innerHTML = text;
+                insert_line = insert_line + text + "</div>";
+            }
+            let toinsert = document.getElementById("order" + id);
+            toinsert.innerHTML = insert_line;
+            sql_blocks[id].connected = true;
+        } else if (sql_blocks[id].purpose.localeCompare("order") == 0) {
+            let toinsert = document.getElementById("order" + id);
+            toinsert.innerHTML = "Соедините этот блок с одним из блоков \"Из таблицы\" для его использования.";
+            sql_blocks[id].connected = false;
+        }
+    }
+}
+
 function where_selection() {
     for (let id = 0; id < blocks; id++) {
         let sign = document.getElementById( "where_columns_sign" + id );
@@ -388,6 +427,19 @@ function where_selection() {
             sql_blocks[id].sign = sign.options[sign.selectedIndex].value;
             sql_blocks[id].column = select.options[select.selectedIndex].value;
             sql_blocks[id].compare = search.value;
+        }
+    }
+    join_arguments();
+    sql_exec();
+}
+
+function order_selection() {
+    for (let id = 0; id < blocks; id++) {
+        let order_selection = document.getElementById( "order_selection" + id );
+        let order_columns_select = document.getElementById( "order_columns_select" + id );
+        if (((sql_blocks[id].purpose.localeCompare("order") == 0))&&(sql_blocks[id].connected)&&(document.contains(order_selection))&&(document.contains(order_columns_select))) {
+            sql_blocks[id].direction = order_selection.options[order_selection.selectedIndex].value;
+            sql_blocks[id].column = order_columns_select.options[order_columns_select.selectedIndex].value;
         }
     }
     join_arguments();
