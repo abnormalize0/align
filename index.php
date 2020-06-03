@@ -57,7 +57,7 @@
             <div align="center" class="props" id="textproperties" style="visibility: hidden;"><h1>Текст</h1>
                 Текст: <input id="texttext"></div>
             <div align="center" class="props" id="tableproperties" style="visibility: hidden;"><h1>Таблица</h1>
-                пока только статическая</div>
+                Заголовки:<br><div class="headers_editor" id="table_headers"></div></div>
             <div align="center" class="props" id="pageproperties" style="visibility: hidden;"><h1>Страница</h1>
                 Название: <input id="pagename" maxlength="44"></div>
             <div id="delet" class="delet">Удалить</div>

@@ -272,6 +272,7 @@ function clearing() {
 }
 
 async function sql_exec() {
+    table_substitution();
     console.log("EXEC");
     clearing();
     for (let i = 0; i < blocks; i++) {
@@ -353,6 +354,7 @@ async function sql_exec() {
             }
         }
     }
+    table_substitution();
 }
 
 async function where_fill() {

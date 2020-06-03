@@ -3,6 +3,9 @@
 let elements = [];
 let elementscode = [];
 
+let original_header = [[],[]];
+let altered_header = [[],[]]
+
 let count = 0;
 
 let right_visible = false;
@@ -73,6 +76,20 @@ function properties_window(id) {  //анимация окна со свойст�
       elements[id].text = buttontext.value;
       elementscode[id].text = "> " + buttontext.value;
       document.getElementById("tree" + id).innerHTML = "> " + buttontext.value;
+    }
+  } else if (elements[id].type == "table") {
+    let table = document.getElementById("el" + id);
+    let headers_list = document.getElementById("table_headers");
+    headers_list.innerHTML = "";
+    for (let i = 0; i < table.rows[0].cells.length; i++) {
+      headers_list.insertAdjacentHTML('beforeend', "<input id=\"header" + i + "\" value=\"" +  table.rows[0].cells[i].innerHTML + "\">" + "<br>");
+      document.getElementById("header" + i).oninput = function() {
+        let index1 = original_header[id].indexOf(table.rows[0].cells[i].innerHTML);
+        let index2 = altered_header[id].indexOf(table.rows[0].cells[i].innerHTML);
+        table.rows[0].cells[i].innerHTML = document.getElementById("header" + i).value;
+        altered_header[id][index2] = document.getElementById("header" + i).value;
+        console.table("insert" + altered_header[id]);
+      }
     }
   }
 
@@ -426,6 +443,10 @@ function mousedown2(b) {  //добавление элементов в2точк�
         text: "> Вставить текст " + count,
         end: "</table>"
       }
+
+      // original_header[count][0] = "Таблица";
+      // altered_header[count][0] = "Таблица";
+
       document.getElementById("tree").insertAdjacentHTML('beforeend', "<div id = \"tree" + count + "\">> Таблица " + count + "</div>");
 
       for (let i = 0; i < blocks; i++) {
@@ -605,3 +626,31 @@ textarea.addEventListener('input', (e) => {
   title = textarea.value;
 });
     
+function table_substitution() {
+    for(let id = 0; id < elements.length; id++) {
+      if(elements[id].type.localeCompare("table") == 0) {
+        let table = document.getElementById("el" + id);
+        for (let i = 0; i < table.rows[0].cells.length; i++) {
+          if(original_header[id] === undefined) {
+            continue;
+          }
+            let index = original_header[id].indexOf(table.rows[0].cells[i].innerHTML);
+            let index2 = altered_header[id].indexOf(table.rows[0].cells[i].innerHTML);
+            if ((index == -1)&&(index2 == -1)) {
+                original_header[id].push(table.rows[0].cells[i].innerHTML);
+                altered_header[id].push(table.rows[0].cells[i].innerHTML);
+                console.table("add original " + original_header[id]);
+                console.table("add altered " + altered_header[id]);
+            } else {
+                if (index == -1) {
+                    index = index2;
+                }
+                table.rows[0].cells[i].innerHTML = altered_header[id][index];
+                console.table("change original " + original_header[id]);
+                console.table("change altered " + altered_header[id]);
+            }
+        }
+      }
+    }
+}
+

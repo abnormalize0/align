@@ -181,3 +181,9 @@ html, body {
     bottom: 70px;
     background-color: red;
 }
+
+.headers_editor {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 120px;
+}
