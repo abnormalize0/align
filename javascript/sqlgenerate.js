@@ -780,11 +780,12 @@ function join_draw_line(id,e) {
 function where_check() {
     for (let i = 0; i < blocks; i++) {
         if (sql_blocks[i].purpose.localeCompare("where") == 0) {
+            let exit = false;
             let search = i;
-            if(sql_blocks[search].prev_line == null) {
-                sql_blocks[i].table = [];
-                continue;
-            }
+            // if(sql_blocks[search].prev_line == null) {
+            //     sql_blocks[i].table = [];
+            //     continue;
+            // }
             while ((sql_blocks[search].prev_line != null) && (sql_blocks[search].prev_line != "")) {
                 search = sql_blocks[search].prev_line;
                 if (sql_blocks[search].purpose.localeCompare("from") == 0) {
@@ -810,23 +811,48 @@ function where_check() {
                         sql_blocks[i].table = [...compare];
                         sql_blocks[i].tochange = 1;
                     }
-                    
-                    continue;
+                    alert("forth");
+                    exit = true;
                 }
             }
+            if(exit) {
+                continue;
+            }
+            alert("what");
             search = i;
             while ((sql_blocks[search].next_line != null) && (sql_blocks[search].next_line != "")) {
                 search = sql_blocks[search].next_line;
                 if (sql_blocks[search].purpose.localeCompare("from") == 0) {
-                    if ((sql_blocks[i].table[0] != null) && (sql_blocks[i].table[0].localeCompare(sql_blocks[search].selected) == 0)) {
-                        sql_blocks[i].tochange = 0;
-                    } else {
-                        sql_blocks[i].table[0] = sql_blocks[search].selected;
+                    sql_blocks[i].tochange = 0;
+                    //sql_blocks[i].table = [];
+                    let compare = [];
+                    let counter = 0;
+                    let loop = true;
+                    while(loop) {
+                        if ((sql_blocks[search].purpose.localeCompare("join") == 0)&&(sql_blocks[search].selected != null)&&(sql_blocks[search].selected != "")&&(sql_blocks[search].join_method != null)&&(sql_blocks[search].to_table != null)&&(sql_blocks[search].from_table != null)&&(sql_blocks[search].join_method != "")&&(sql_blocks[search].to_table != "")&&(sql_blocks[search].from_table != "")) {
+                            compare[counter] = sql_blocks[search].selected;
+                        } else if ((sql_blocks[search].purpose.localeCompare("join") != 0)&&(sql_blocks[search].selected != null)&&(sql_blocks[search].selected != "")) {
+                            compare[counter] = sql_blocks[search].selected;
+                        }
+                        if (sql_blocks[search].next_join_line == null) {
+                            loop = false;
+                        } else {
+                            search = sql_blocks[search].next_join_line;
+                        }
+                        counter++;
+                    }
+                    if(!(compare.equals(sql_blocks[i].table))) {
+                        sql_blocks[i].table = [...compare];
                         sql_blocks[i].tochange = 1;
                     }
-                    continue;
+                    alert("back");
+                    exit = true;
                 }
             }
+            if(exit) {
+                continue;
+            }
+            sql_blocks[i].table = [];
         }
     }
     where_fill();
