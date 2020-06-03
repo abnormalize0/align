@@ -65,10 +65,40 @@ for ($i; $i < count($select); $i++) {
     $sql = $sql.", ".$select[$i];
 }
 $sql = $sql." FROM `$table_title`";
+$global_order = false;
 if (isset($join_method)) {
     //$sql = $sql." WHERE ".$where_column[0].$where_sign[0]."'".$where_compare[0]."'";
     for ($i = 0; $i < count($join_method); $i++) {
-        $sql = $sql." INNER JOIN ".$join[$i]." ON (".$from_table[$i]." = ".$to_table[$i] . ")";
+        echo($join_method[$i]);
+        switch ($join_method[$i]) {
+            case 1:
+                $sql = $sql." INNER JOIN ".$join[$i]." ON (".$from_table[$i]." = ".$to_table[$i] . ")";
+                break;
+            case 2:
+                $sql = $sql." LEFT OUTER JOIN ".$join[$i]." ON (".$from_table[$i]." = ".$to_table[$i] . ")";
+                break;
+            case 3:
+                $sql = $sql." RIGHT OUTER JOIN ".$join[$i]." ON (".$from_table[$i]." = ".$to_table[$i] . ")";
+                break;
+            case 4:
+                $global_order = true;
+                $intermediate1 = $sql." LEFT OUTER JOIN ".$join[$i]." ON (".$from_table[$i]." = ".$to_table[$i] . ")";
+                $intermediate2 = $sql." RIGHT OUTER JOIN ".$join[$i]." ON (".$from_table[$i]." = ".$to_table[$i] . ")";
+                $sql = "((" . $intermediate1 . ") UNION (" . $intermediate2 . "))";
+                break;
+            case 5:
+                $sql = $sql." LEFT OUTER JOIN ".$join[$i]." ON (".$from_table[$i]." = ".$to_table[$i] . ") WHERE " . $to_table[$i] . " is NULL";
+                break;
+            case 6:
+                $sql = $sql." RIGHT OUTER JOIN ".$join[$i]." ON (".$from_table[$i]." = ".$to_table[$i] . ") WHERE " . $to_table[$i] . " is NULL";
+                break;
+            case 7:
+                $global_order = true;
+                $intermediate1 = $sql." LEFT OUTER JOIN ".$join[$i]." ON (".$from_table[$i]." = ".$to_table[$i] . ") WHERE " . $to_table[$i] . " is NULL";
+                $intermediate2 = $sql." RIGHT OUTER JOIN ".$join[$i]." ON (".$from_table[$i]." = ".$to_table[$i] . ") WHERE " . $to_table[$i] . " is NULL";
+                $sql = "((" . $intermediate1 . ") UNION ALL (" . $intermediate2 . "))";
+                break;
+        }
     }
 }
 if (isset($where_sign)) {
@@ -79,6 +109,10 @@ if (isset($where_sign)) {
 }
 
 if (isset($order_direction)) {
+    if($global_order) {
+        $divide = explode(".", $order_column);
+        $order_column = $divide[2];
+    }
     $sql = $sql. " ORDER BY " . $order_column;
     if ($order_direction == 1) {
         $sql = $sql. " ASC";
