@@ -21,6 +21,20 @@
     z-index: 5000;
 }
 
+.delete {
+    position: absolute;
+    border-radius: 50%;
+    background-color: red;
+    z-index: 5000;
+    text-align: center;
+    height: 1em;
+    width: 1em;
+    line-height: 1em;
+    top: -0.5em;
+    right: -0.5em;
+    transform: rotate(45deg);
+}
+
 .join_connect {
     position: absolute;
     border-radius: 50%;

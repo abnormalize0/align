@@ -19,6 +19,7 @@ for ($i = 0; $i < count($table_title); $i++) {
     echo $i;
     // Select column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='bill' AND TABLE_SCHEMA='carcompany'
     $headers_result = mysqli_query($con,$headers_sql);
+    echo "<option value=''>Не выбрано</option>";
     while($row = mysqli_fetch_array($headers_result)) {
         echo "<option value=\"`" . $dbname . "`.`" . $table_title[$i] . "`.`" . $row['COLUMN_NAME'] . "`\">" . $row['COLUMN_NAME'] . " из таблицы " . $table_title[$i] . "</option>";
     }
@@ -27,6 +28,7 @@ for ($i = 0; $i < count($table_title); $i++) {
 
 echo "</select>";
 echo "<select onchange='where_selection(" .$id.")' style=\"width: 70px;\" id=\"where_columns_sign".$id."\">
+<option value=''>Не выбрано</option>
 <option value=\"=\">=</option>
 <option value=\"<>\">≠</option>
 <option value=\"<\"><</option>

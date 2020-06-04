@@ -262,6 +262,53 @@ function add_block(b) {  //добавление элементов в2точка
         }
     }
     
+    document.getElementById("block" + blocks).insertAdjacentHTML('beforeend',"<div class='delete' id='sql_delete" + blocks + "'>+</div>");
+    document.getElementById("sql_delete" + blocks).style.visibility = "hidden";
+    document.getElementById("block" + blocks).addEventListener("mouseover", show_delete_button.bind(null,blocks));
+    document.getElementById("block" + blocks).addEventListener("mouseout", hide_delete_button.bind(null,blocks));
+    document.getElementById("sql_delete" + blocks).addEventListener("mousedown", delete_block.bind(null,blocks));
+    document.getElementById("sql_delete" + blocks).addEventListener("mousedown",block_move.bind(null,blocks));
+
+    function delete_block(id) {
+        document.getElementById("block" + id).removeEventListener("mousedown", delete_block.bind(null,blocks));
+        document.getElementById("block" + id).removeEventListener("mousedown",block_move.bind(null,blocks));
+        sql_blocks[id].purpose = "deleted";
+        if(sql_blocks[id].input_line != null) {
+            document.getElementById("line" + sql_blocks[id].input_line).remove();
+            sql_blocks[id].input_line = null;
+            sql_blocks[sql_blocks[id].prev_line].next_line = null;
+            sql_blocks[sql_blocks[id].prev_line].output_line = null;
+        }
+        if(sql_blocks[id].output_line != null) {
+            document.getElementById("line" + sql_blocks[id].output_line).remove();
+            sql_blocks[id].output_line = null;
+            sql_blocks[sql_blocks[id].next_line].prev_line = null;
+            sql_blocks[sql_blocks[id].next_line].input_line = null;
+        }
+        if(sql_blocks[id].input_join_line != null) {
+            document.getElementById("line" + sql_blocks[id].input_join_line).remove();
+            sql_blocks[id].input_join_line = null;
+            sql_blocks[sql_blocks[id].prev_join_line].next_join_line = null;
+            sql_blocks[sql_blocks[id].prev_join_line].output_join_line = null;
+        }
+        if(sql_blocks[id].output_join_line != null) {
+            document.getElementById("line" + sql_blocks[id].output_join_line).remove();
+            sql_blocks[id].output_join_line = null;
+            sql_blocks[sql_blocks[id].next_join_line].prev_join_line = null;
+            sql_blocks[sql_blocks[id].next_join_line].input_join_line = null;
+        }
+        document.getElementById("block" + id).remove();
+        where_check();
+        where_selection();
+    }
+
+    function show_delete_button(id) {
+        document.getElementById("sql_delete" + id).style.visibility = "visible";
+    }
+    function hide_delete_button(id) {
+        document.getElementById("sql_delete" + id).style.visibility = "hidden";
+    }
+
     function block_move(id,e) {
 
         window.addEventListener("mousemove", line_blockmove);

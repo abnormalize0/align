@@ -27,6 +27,7 @@ for ($i = 0; $i < count($table_title); $i++) {
 
 echo "</select>";
 echo "<select onchange='order_selection(" .$id.")' style=\"width: 105px;\" id=\"order_selection".$id."\">
+<option value=''>Не выбрано</option>
 <option value=\"1\">Возрастания</option>
 <option value=\"2\">Убывания</option>
 </select>";

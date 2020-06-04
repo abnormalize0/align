@@ -363,11 +363,7 @@ async function where_fill() {
             if ((document.contains(document.getElementById("where" + id))) && (sql_blocks[id].tochange == 0)) {
                 continue;
             }
-            // if (document.contains(document.getElementById("where" + id))) {
-            //     document.getElementById("where" + id).remove();
-            // }
             let insert_line = "<div id = \"where" + id + "\">&nbspСтолбец:&nbsp&nbsp&nbsp&nbsp&nbspЗнак:&nbsp&nbsp&nbsp&nbsp&nbsp&nbspЗначение: <br> <select style=\"width: 70px;\" id='where_columns_select" + id + "' onchange='where_selection(" + id + ")'>";
-            //let table = tables_array[sql_blocks[id].table[0]];
             let request = "";
             for(let i = 0; i < sql_blocks[id].table.length; i++) {
                 request = request + "send_table[]=" + tables_array[sql_blocks[id].table[i]] + "&";
@@ -376,7 +372,6 @@ async function where_fill() {
             let response = await fetch("ajax_reqests/where_content.php?" + request);
             if (response.ok) {
                 let text = await response.text();
-                //document.getElementById(table_id).innerHTML = text;
                 insert_line = insert_line + text + "</div>";
             }
             let toinsert = document.getElementById("where" + id);
@@ -386,6 +381,10 @@ async function where_fill() {
             let toinsert = document.getElementById("where" + id);
             toinsert.innerHTML = "Соедините этот блок с одним из блоков \"Из таблицы\" для его использования.";
             sql_blocks[id].connected = false;
+            sql_blocks[id].column = null;
+            sql_blocks[id].sign = null;
+            sql_blocks[id].compare = null;
+            sql_blocks[id].tochange = 1;
         }
     }
 }
@@ -396,9 +395,9 @@ async function order_fill() {
             if ((document.contains(document.getElementById("order" + id))) && (sql_blocks[id].tochange == 0)) {
                 continue;
             }
-            let insert_line = "<div id = \"order" + id + "\">&nbsp&nbsp&nbsp&nbsp&nbspСтолбец:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspВ порядке:<br> <select style=\"width: 105px;\" id='order_columns_select" + id + "' onchange='where_selection(" + id + ")'>";
-            //let table = tables_array[sql_blocks[id].table[0]];
+            let insert_line = "<div id = \"order" + id + "\">&nbsp&nbsp&nbsp&nbsp&nbspСтолбец:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspВ порядке:<br> <select style=\"width: 105px;\" id='order_columns_select" + id + "' onchange='order_selection(" + id + ")'>";
             let request = "";
+            insert_line = insert_line + "<option value=''> Не выбрано </option>";
             for(let i = 0; i < sql_blocks[id].table.length; i++) {
                 request = request + "send_table[]=" + tables_array[sql_blocks[id].table[i]] + "&";
             }
@@ -415,6 +414,8 @@ async function order_fill() {
         } else if (sql_blocks[id].purpose.localeCompare("order") == 0) {
             let toinsert = document.getElementById("order" + id);
             toinsert.innerHTML = "Соедините этот блок с одним из блоков \"Из таблицы\" для его использования.";
+            sql_blocks[id].direction = null;
+            sql_blocks[id].column = null;
             sql_blocks[id].connected = false;
         }
     }

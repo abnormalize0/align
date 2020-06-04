@@ -463,7 +463,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
               }
           }
           insert = insert + "</select> <div id='connect_out" + i + "' style='right: -10px; top: 40px;' class='connect'> </div>";
-          if(document.getElementById("block" + i).innerHTML.indexOf("<h3>Вывести данные в таблицу:</h3>") > -1) {           //вот для этой штуки неплохо бы ещё структуру все равно создать
+          if((sql_blocks[i].purpose.localeCompare("deleted") != 0)&&(document.getElementById("block" + i).innerHTML.indexOf("<h3>Вывести данные в таблицу:</h3>") > -1)) {
               document.getElementById("block" + i).innerHTML = insert;
               document.getElementById("connect_out" + i).addEventListener("mousedown",draw_line.bind(null,i));
               document.getElementById("connect_out" + i).addEventListener("mouseover",colorfy_out.bind(null,i));
