@@ -19,7 +19,7 @@ function show_paging() {
     if (bottom == 0) {
             clearInterval(id);
         } else {
-            bottom+=10;
+            bottom+=30;
             paging.style.bottom = bottom + 'px';
         }
     }
@@ -48,7 +48,7 @@ function hide_paging(event) {
         if (bottom == -120) {
                 clearInterval(id);
             } else {
-                bottom-=10;
+                bottom-=30;
                 paging.style.bottom = bottom + 'px';
             }
         }
@@ -69,8 +69,6 @@ function redraw_elements(page) {
 document.getElementById("add_block").addEventListener("mousedown", create_page);
 create_page();
 highlight(1);
-// show_paging();
-// hide_paging();
 
 function create_page() {
     document.getElementById("pages_part").insertAdjacentHTML('beforeend',"<div class=\"page_block\" style=\"left: " + (10 + (90 * number_of_pages)) + "px\" id=\"page" + (number_of_pages + 1) + "\">Page_" + (number_of_pages + 1) + "</div>");
@@ -90,6 +88,7 @@ function goto_page(page,e) {
     cur_page = page;
     highlight(page);
 }
+
 function highlight(page) {
     document.getElementById("page" + previous_page).style.backgroundColor = "orange";
     document.getElementById("page" + page).style.backgroundColor = "orangered";
@@ -122,34 +121,7 @@ function page_properties(id) {  //анимация окна со свойств�
     pagename.oninput = function() {
         elem.innerHTML = pagename.value;
     }
-    
-  
-    // document.getElementById("delet").onclick = function() {
-    //   document.getElementById('el' + id).remove();
-    //   document.getElementById('tree' + id).remove();
-    //   shadowed = -1;
-    //   elements[id].type = "deleted";
-    //   right_visible = false;
-    //   let rightmenu = document.getElementById("text_input_properties");
-    //   if (rightmenu.style.right == "0px") {
-    //       let pos = 0;
-    //       let id = setInterval(frame,1);
-    //       function frame() {
-    //       if (pos == -300) {
-    //               clearInterval(id);
-    //           } else {
-    //               pos-=10;
-    //               rightmenu.style.right = pos + 'px';
-    //           }
-    //       }
-    //   }
-    //   document.getElementById("textfieldproperties").style.visibility = "hidden";
-    //   document.getElementById("buttonproperties").style.visibility = "hidden";
-    //   document.getElementById("textproperties").style.visibility = "hidden";
-    //   document.getElementById("pageproperties").style.visibility = "hidden";
-    // }
-  
-  }
+}
 
 
 (function() {

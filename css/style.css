@@ -187,3 +187,12 @@ html, body {
     overflow-x: hidden;
     height: 120px;
 }
+
+.style_editor {
+    overflow-y: auto;
+    position: absolute;
+    top: 50%;
+    bottom: 10%;
+    left: 20px;
+    width: 260px;
+}

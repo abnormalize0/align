@@ -53,14 +53,15 @@
             <div align="center" class="props" id="textfieldproperties" style="visibility: hidden;"><h1>Текстовое поле</h1>
             плейсхолдер: <input id="ph"></div>
             <div align="center" class="props" id="buttonproperties" style="visibility: hidden;"><h1>Кнопка</h1>
-                Текст: <input id="buttontext"></div>
+                Текст: <textarea id="buttontext"></textarea></div>
             <div align="center" class="props" id="textproperties" style="visibility: hidden;"><h1>Текст</h1>
-                Текст: <input id="texttext"></div>
+                Текст: <textarea id="texttext"></textarea></div>
             <div align="center" class="props" id="tableproperties" style="visibility: hidden;"><h1>Таблица</h1>
                 Заголовки:<br><div class="headers_editor" id="table_headers"></div></div>
             <div align="center" class="props" id="pageproperties" style="visibility: hidden;"><h1>Страница</h1>
                 Название: <input id="pagename" maxlength="44"></div>
             <div id="delet" class="delet">Удалить</div>
+            <div id="style_editor" class="style_editor"><div id="style_list"></div><div id="style_manage"></div><div id="style_edit"></div></div>
         </div>
         <div class="sqlgenpage" id="sqlgenpage">
             <div id="select_block" class="text_baton"> Вывести данные </div>
@@ -89,5 +90,6 @@
         <script src="javascript/paging.js"></script>
         <script src="javascript/dynamic_content.js"></script>
         <script src="javascript/saving.js"></script>
+        <script src="javascript/style_editor.js"></script>
     </body>
 </html>

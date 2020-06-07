@@ -62,20 +62,24 @@ function properties_window(id) {  //анимация окна со свойст�
     let elem = document.getElementById("el" + id);
     texttext.value = elements[id].text;
     texttext.oninput = function() {
-      elem.innerHTML = texttext.value;
+      let inserted = texttext.value.replace(/\n/g, "<br>");
+      let inserted_to_tree = texttext.value.replace(/\n/g, " ");
+      elem.innerHTML = inserted;
       elements[id].text = texttext.value;
-      elementscode[id].text = "> " + texttext.value;
-      document.getElementById("tree" + id).innerHTML = "> " + texttext.value;
+      elementscode[id].text = "> " + inserted;
+      document.getElementById("tree" + id).innerHTML = "> " + inserted_to_tree;
     } 
   } else if (elements[id].type == "button") {
     let buttontext = document.getElementById("buttontext");
     let elem = document.getElementById("el" + id);
     buttontext.value = elements[id].text;
     buttontext.oninput = function() {
-      elem.innerHTML = buttontext.value;
+      let inserted = buttontext.value.replace(/\n/g, "<br>");
+      let inserted_to_tree = buttontext.value.replace(/\n/g, " ");
+      elem.innerHTML = inserted;
       elements[id].text = buttontext.value;
-      elementscode[id].text = "> " + buttontext.value;
-      document.getElementById("tree" + id).innerHTML = "> " + buttontext.value;
+      elementscode[id].text = "> " + inserted;
+      document.getElementById("tree" + id).innerHTML = "> " + inserted_to_tree;
     }
   } else if (elements[id].type == "table") {
     let table = document.getElementById("el" + id);
@@ -366,6 +370,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
           type: "input",
           text: "Текстовое поле " + count,
           page: cur_page,
+          style: 0,
           x: 200 + "px",
           y: 100 + "px"
       }
@@ -389,6 +394,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
         type: "button",
         text: "Кнопка " + count,
         page: cur_page,
+        style: 0,
         x: 200 + "px",
         y: 130 + "px"
       }
@@ -410,6 +416,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
         type: "text",
         text: "Вставить текст " + count,
         page: cur_page,
+        style: 0,
         x: 200 + "px",
         y: 160 + "px"
       }
@@ -432,6 +439,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
         type: "table",
         text: "Таблица " + count,
         page: cur_page,
+        style: 0,
         x: 200 + "px",
         y: 160 + "px"
       }
@@ -486,6 +494,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
       document.getElementById("tableproperties").style.visibility = "hidden";
       document.getElementById("pageproperties").style.visibility = "hidden";
       properties_window(elemid);
+      styles_window(elemid);
       generate_shadow(elemid);
       if (elements[elemid].type == "input") document.getElementById("textfieldproperties").style.visibility = "visible";
       if (elements[elemid].type == "button") document.getElementById("buttonproperties").style.visibility = "visible";
@@ -604,6 +613,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
       document.getElementById("tableproperties").style.visibility = "hidden";
       document.getElementById("pageproperties").style.visibility = "hidden";
       if (properties) properties_window(elemid);
+      if (properties) styles_window(elemid);
       if (properties) drop_shadow();
       if (properties) generate_shadow(elemid);
       if (elements[elemid].type == "input") document.getElementById("textfieldproperties").style.visibility = "visible";
@@ -616,7 +626,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
     }
   }
   
-
+  change_style(0);
 }
 
 let title = "untitled"
