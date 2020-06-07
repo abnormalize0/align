@@ -2,6 +2,7 @@ const save_baton = document.querySelector(".save_baton");
 save_baton.addEventListener("mousedown", saving);
 
 function saving(b) { //скачивание файл
+    sql_exec();
     let zip = new JSZip();
     let content = zip.folder("content");
     for (let pages = 1; pages <= number_of_pages; pages++) {

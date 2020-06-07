@@ -46,7 +46,6 @@ if (!isset($select)) {
     $number_of_columns = 0;
     $column_names = array();
     while($row = mysqli_fetch_array($headers_result)) {
-        //echo "<th>" . $row['COLUMN_NAME'] . "</th>";
         $select[$number_of_columns] = $row['COLUMN_NAME'];
         $number_of_columns++;
     }
@@ -67,7 +66,6 @@ for ($i; $i < count($select); $i++) {
 $sql = $sql." FROM `$table_title`";
 $global_order = false;
 if (isset($join_method)) {
-    //$sql = $sql." WHERE ".$where_column[0].$where_sign[0]."'".$where_compare[0]."'";
     for ($i = 0; $i < count($join_method); $i++) {
         switch ($join_method[$i]) {
             case 1:
