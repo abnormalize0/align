@@ -50,6 +50,15 @@ function properties_window(id) {  //анимация окна со свойст�
   if (elements[id].type == "input") {
     let ph = document.getElementById("ph");
     let elem = document.getElementById("el" + id);
+    let textfieldsetup = document.getElementById("textfieldsetup");
+    let insert = "Для использования значения поля выберете в соответствующих выпадающих списках SQL запроса: <b>\"text field " + id + "\"</b>";
+    insert = insert + "<br>Связать с кнопкой:<select id='inputableselect' onchange='elements[\"" + id + "\"].button_rel = this.value;elements[\"" + id + "\"].table_rel = elements[this.value].table_rel;'><option value='-1'>Не выбрано</option>";
+    for(let i = 0; i < elements.length; i++) {
+      if ((elements[i].type.localeCompare("button") == 0)&&(elements[i].action == 1)&&(elements[i].table_rel != -1)) {
+        insert = insert + "<option value='" + i + "'> " + elements[i].text + " </option>";
+      }
+    }
+    textfieldsetup.innerHTML = insert + "</select>";
     ph.value = elements[id].text;
     ph.oninput = function() {
       elem.setAttribute("placeholder",ph.value);
@@ -57,6 +66,9 @@ function properties_window(id) {  //анимация окна со свойст�
       elementscode[id].placeholder = "placeholder = \"" + ph.value + "\"";
       document.getElementById("tree" + id).innerHTML = "> " + ph.value;
     }
+    document.getElementById("inputableselect").value = elements[id].button_rel;
+    //textfieldsetup.innerHTML = "<input oninput='alert(document.getElementById(\"aaa\").value);' id='aaa' type='text' name='city' list='cityname'><datalist id='cityname'><option value='Boston'><option value='Cambridge'></datalist>";
+    
   } else if (elements[id].type == "text") {
     let texttext = document.getElementById("texttext");
     let elem = document.getElementById("el" + id);
@@ -71,8 +83,17 @@ function properties_window(id) {  //анимация окна со свойст�
     } 
   } else if (elements[id].type == "button") {
     let buttontext = document.getElementById("buttontext");
+    let buttonaction = document.getElementById("buttonaction");
     let elem = document.getElementById("el" + id);
     buttontext.value = elements[id].text;
+    buttonaction.value = elements[id].action;
+    if (elements[id].action == 1) {
+      tables_fill(id);
+    } else if (elements[id].action == 2) {
+
+    } else {
+      buttoption.innerHTML = "";
+    }
     buttontext.oninput = function() {
       let inserted = buttontext.value.replace(/\n/g, "<br>");
       let inserted_to_tree = buttontext.value.replace(/\n/g, " ");
@@ -80,6 +101,27 @@ function properties_window(id) {  //анимация окна со свойст�
       elements[id].text = buttontext.value;
       elementscode[id].text = "> " + inserted;
       document.getElementById("tree" + id).innerHTML = "> " + inserted_to_tree;
+    }
+    buttonaction.onchange = function() {
+      elements[id].action = buttonaction.value;
+      if (buttonaction.value == 1) {
+        tables_fill(id);
+      } else if (buttonaction.value == 2) {
+        
+      } else {
+        buttoption.innerHTML = "";
+      }
+    }
+    function tables_fill(id) {
+      let buttoption = document.getElementById("buttoption");
+      let insert = "Связать с таблицей: <select onclick='elements[" + id + "].table_rel=this.value;' id='butttableselect'><option value='-1'> Не выбрано </option>";
+      for(let i = 0; i < elements.length; i++) {
+        if (elements[i].type.localeCompare("table") == 0) {
+          insert = insert + "<option value='" + i + "'> Таблица " + i + " </option>";
+        }
+      }
+      buttoption.innerHTML = insert + "</select>";
+      document.getElementById("butttableselect").value = elements[id].table_rel;
     }
   } else if (elements[id].type == "table") {
     let table = document.getElementById("el" + id);
@@ -372,7 +414,9 @@ function mousedown2(b) {  //добавление элементов в2точк�
           page: cur_page,
           style: 0,
           x: 200 + "px",
-          y: 100 + "px"
+          y: 100 + "px",
+          button_rel: -1,
+          table_rel: -1
       }
 
       elementscode[count] = {
@@ -396,7 +440,9 @@ function mousedown2(b) {  //добавление элементов в2точк�
         page: cur_page,
         style: 0,
         x: 200 + "px",
-        y: 130 + "px"
+        y: 130 + "px",
+        action: 0,
+        table_rel: -1
       }
 
       elementscode[count] = { //заменить

@@ -322,7 +322,7 @@ async function sql_exec() {
                         } //join_connect_out
                     }
                 } else if (sql_blocks[cur_block].purpose.localeCompare("where") == 0) {
-                    if ((sql_blocks[cur_block].sign != null)&&(sql_blocks[cur_block].sign != "")&&(sql_blocks[cur_block].column != null)&&(sql_blocks[cur_block].column != "")&&(sql_blocks[cur_block].compare != null)&&(sql_blocks[cur_block].compare != "")) {
+                    if ((sql_blocks[cur_block].sign != null)&&(sql_blocks[cur_block].sign != "")&&(sql_blocks[cur_block].column != null)&&(sql_blocks[cur_block].column != "")&&(sql_blocks[cur_block].compare != null)&&(sql_blocks[cur_block].compare != "")&&(sql_blocks[cur_block].compare.search("text field") == -1)) {
                         request = request + "where_sign[]=" + sql_blocks[cur_block].sign + "&";
                         request = request + "where_column[]=" + sql_blocks[cur_block].column + "&";
                         request = request + "where_compare[]=" + sql_blocks[cur_block].compare + "&";
@@ -363,10 +363,22 @@ async function where_fill() {
             if ((document.contains(document.getElementById("where" + id))) && (sql_blocks[id].tochange == 0)) {
                 continue;
             }
+            let table;
+            let search = id;
+            while (sql_blocks[search].purpose.localeCompare("select") != 0) {
+                search = sql_blocks[search].prev_line;
+            }
+            table = sql_blocks[search].selected;
             let insert_line = "<div id = \"where" + id + "\">&nbspСтолбец:&nbsp&nbsp&nbsp&nbsp&nbspЗнак:&nbsp&nbsp&nbsp&nbsp&nbsp&nbspЗначение: <br> <select style=\"width: 70px;\" id='where_columns_select" + id + "' onchange='where_selection(" + id + ")'>";
             let request = "";
             for(let i = 0; i < sql_blocks[id].table.length; i++) {
                 request = request + "send_table[]=" + tables_array[sql_blocks[id].table[i]] + "&";
+            }
+            for(let i = 0; i < elements.length; i++) {
+                if ((elements[i].type.localeCompare("input") == 0)&&(elements[i].table_rel == table)) {
+                    request = request + "dynamic_table_id[]=" + i + "&";
+                    request = request + "dynamic_table_name[]=" + elements[i].text + "&";
+                }
             }
             request = request + "id=" + id;
             let response = await fetch("ajax_reqests/where_content.php?" + request);
@@ -376,6 +388,7 @@ async function where_fill() {
             }
             let toinsert = document.getElementById("where" + id);
             toinsert.innerHTML = insert_line;
+            //toinsert.innerHTML = insert_line + "<datalist id='where_columns_select" + id + "'><option value='Boston'><option value='Cambridge'></datalist>";
             sql_blocks[id].connected = true;
         } else if (sql_blocks[id].purpose.localeCompare("where") == 0) {
             let toinsert = document.getElementById("where" + id);

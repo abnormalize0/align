@@ -2,6 +2,8 @@
 
 $table_title = $_GET['send_table'];
 $id = $_GET['id'];
+$dynamic_table_id = $_GET['dynamic_table_id'];
+$dynamic_table_name = $_GET['dynamic_table_name'];
 
 
 $dbname = $_COOKIE["database"];
@@ -38,7 +40,15 @@ echo "<select onchange='where_selection(" .$id.")' style=\"width: 70px;\" id=\"w
 <option value=\" LIKE \">LIKE</option>
 <option value=\" NOT LIKE \">NOT LIKE</option>
 </select>";
-echo "<input id=\"where_columns_search".$id."\" style=\"width: 70px;\" oninput='where_selection(".$id.")'>";
-
+echo "<input id=\"where_columns_search".$id."\" style=\"width: 70px;\" oninput='where_selection(".$id.")'";
+if (isset($dynamic_table_id)) {
+    echo " list='where_columns_search_list".$id."'><datalist id='where_columns_search_list".$id."'>";
+    for ($i = 0; $i < count($dynamic_table_id); $i++) {
+        echo "<option value='text field ".$dynamic_table_id[$i]."'>";
+    }
+    echo "</datalist>";
+} else {
+    echo ">";
+}
 mysqli_close($con);
 ?>

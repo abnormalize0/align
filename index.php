@@ -51,9 +51,17 @@
 
         <div syyle="right:-300px;" align="center" id="text_input_properties" class="text_input_properties">
             <div align="center" class="props" id="textfieldproperties" style="visibility: hidden;"><h1>Текстовое поле</h1>
-            плейсхолдер: <input id="ph"></div>
+            плейсхолдер: <input id="ph">
+            <div id='textfieldsetup'></div>
+            </div>
             <div align="center" class="props" id="buttonproperties" style="visibility: hidden;"><h1>Кнопка</h1>
-                Текст: <textarea id="buttontext"></textarea></div>
+                Текст: <textarea cols="20" rows="3" style="resize:none;" id="buttontext"></textarea>
+                <br>Действие:<select id="buttonaction">
+                <option value=0>Отсутствует</option>
+                <option value=1>Принять форму</option>
+                <option value=2>Перйти на другую страницу</option>
+                </select><div id="buttoption"></div>
+                </div>
             <div align="center" class="props" id="textproperties" style="visibility: hidden;"><h1>Текст</h1>
                 Текст: <textarea id="texttext"></textarea></div>
             <div align="center" class="props" id="tableproperties" style="visibility: hidden;"><h1>Таблица</h1>
