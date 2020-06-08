@@ -284,6 +284,7 @@ async function sql_exec() {
             }
             table_id = "el" + wtite_to;
             let request = "";
+            let release_request = "";
             let order_found = false;
             while (sql_blocks[cur_block].next_line != null) {
                 cur_block = sql_blocks[cur_block].next_line;
@@ -326,7 +327,12 @@ async function sql_exec() {
                         request = request + "where_sign[]=" + sql_blocks[cur_block].sign + "&";
                         request = request + "where_column[]=" + sql_blocks[cur_block].column + "&";
                         request = request + "where_compare[]=" + sql_blocks[cur_block].compare + "&";
-                    }
+                    } else if ((sql_blocks[cur_block].sign != null)&&(sql_blocks[cur_block].sign != "")&&(sql_blocks[cur_block].column != null)&&(sql_blocks[cur_block].column != "")&&(sql_blocks[cur_block].compare != null)&&(sql_blocks[cur_block].compare != "")) {
+                        let get_id = sql_blocks[cur_block].compare.replace("text field ","");
+                        release_request = release_request + "where_sign[]=" + sql_blocks[cur_block].sign + "&";
+                        release_request = release_request + "where_column[]=" + sql_blocks[cur_block].column + "&";
+                        release_request = release_request + "where_compare[]=$" + elements[get_id].type + get_id + "&";
+                    } 
                 } else if (sql_blocks[cur_block].purpose.localeCompare("order") == 0) {
                     if (order_found) {
                         document.getElementById("block" + cur_block).style.boxShadow = "0px 0px 5px 5px red";
@@ -350,7 +356,7 @@ async function sql_exec() {
                 for (let headers = 0; headers < fetch_table.rows[0].cells.length; headers++) {
                     request = request + "headers[]=" + altered_header[table_id.replace("el","")][original_header[table_id.replace("el","")].indexOf(fetch_table.rows[0].cells[headers].innerHTML)] + "&";
                 }
-                response = await fetch("ajax_reqests/release_content.php?"+request);
+                response = await fetch("ajax_reqests/release_content.php?"+request+release_request);
                 if (response.ok) {
                     let text = await response.text();
                     elementscode[wtite_to].text = text;
