@@ -349,7 +349,6 @@ async function sql_exec() {
                 let fetch_table = document.getElementById(table_id)
                 for (let headers = 0; headers < fetch_table.rows[0].cells.length; headers++) {
                     request = request + "headers[]=" + altered_header[table_id.replace("el","")][original_header[table_id.replace("el","")].indexOf(fetch_table.rows[0].cells[headers].innerHTML)] + "&";
-                    alert(request);
                 }
                 response = await fetch("ajax_reqests/release_content.php?"+request);
                 if (response.ok) {

@@ -15,7 +15,6 @@ let current_mode = 0;
 
 function topageeditor() {
     location.replace("index.html");
-    alert(elements[1].type);
 }
 
 function generate_shadow(id) {
@@ -522,7 +521,41 @@ function mousedown2(b) {  //добавление элементов в2точк�
               document.getElementById("connect_out" + i).addEventListener("mousedown",draw_line.bind(null,i));
               document.getElementById("connect_out" + i).addEventListener("mouseover",colorfy_out.bind(null,i));
               document.getElementById("connect_out" + i).addEventListener("mouseout",uncolorfy_out.bind(null,i));
+              document.getElementById("block" + i).insertAdjacentHTML('beforeend',"<div class='delete' id='sql_delete" + i + "'>+</div>");
+              document.getElementById("sql_delete" + i).style.visibility = "hidden";
+              document.getElementById("sql_delete" + i).addEventListener("mousedown", delete_block.bind(null,i));
+              function delete_block(id) {
+                document.getElementById("block" + id).removeEventListener("mousedown", delete_block.bind(null,blocks));
+                sql_blocks[id].purpose = "deleted";
+                if(sql_blocks[id].input_line != null) {
+                    document.getElementById("line" + sql_blocks[id].input_line).remove();
+                    sql_blocks[id].input_line = null;
+                    sql_blocks[sql_blocks[id].prev_line].next_line = null;
+                    sql_blocks[sql_blocks[id].prev_line].output_line = null;
+                }
+                if(sql_blocks[id].output_line != null) {
+                    document.getElementById("line" + sql_blocks[id].output_line).remove();
+                    sql_blocks[id].output_line = null;
+                    sql_blocks[sql_blocks[id].next_line].prev_line = null;
+                    sql_blocks[sql_blocks[id].next_line].input_line = null;
+                }
+                if(sql_blocks[id].input_join_line != null) {
+                    document.getElementById("line" + sql_blocks[id].input_join_line).remove();
+                    sql_blocks[id].input_join_line = null;
+                    sql_blocks[sql_blocks[id].prev_join_line].next_join_line = null;
+                    sql_blocks[sql_blocks[id].prev_join_line].output_join_line = null;
+                }
+                if(sql_blocks[id].output_join_line != null) {
+                    document.getElementById("line" + sql_blocks[id].output_join_line).remove();
+                    sql_blocks[id].output_join_line = null;
+                    sql_blocks[sql_blocks[id].next_join_line].prev_join_line = null;
+                    sql_blocks[sql_blocks[id].next_join_line].input_join_line = null;
+                }
+                document.getElementById("block" + id).remove();
+                where_check();
+                where_selection();
           }
+        }
       }
     }
 
