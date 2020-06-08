@@ -99,5 +99,6 @@
         <script src="javascript/dynamic_content.js"></script>
         <script src="javascript/saving.js"></script>
         <script src="javascript/style_editor.js"></script>
+        <div id="loading_screen"></div>
     </body>
 </html>

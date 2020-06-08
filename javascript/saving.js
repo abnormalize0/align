@@ -1,20 +1,32 @@
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
 const save_baton = document.querySelector(".save_baton");
 save_baton.addEventListener("mousedown", saving);
 
-function saving(b) { //скачивание файл
+async function saving(b) { //скачивание файл
     sql_exec();
     let zip = new JSZip();
     let content = zip.folder("content");
     let reference_tables = [];
     let reference_elements_pages = [];
-        let counter = 0;
-        for(let prepare = 0; prepare < count; prepare++) {
-            if((elements[prepare].type.localeCompare("button") == 0)&&(elements[prepare].table_rel != -1)&&(!reference_tables.includes(elements[prepare].table_rel))) {
-                reference_tables[counter] = elements[prepare].table_rel;
-                reference_elements_pages[counter] = elements[prepare].page;
-                counter++;
-            }
+    let redirecter = [];
+    let counter = 0;
+    let recounter = 0;
+    for(let prepare = 0; prepare < count; prepare++) {
+        if((elements[prepare].action == 1)&&(elements[prepare].type.localeCompare("button") == 0)&&(elements[prepare].table_rel != -1)&&(!reference_tables.includes(elements[prepare].table_rel))) {
+            reference_tables[counter] = elements[prepare].table_rel;
+            reference_elements_pages[counter] = elements[prepare].page;
+            counter++;
+        } else if ((elements[prepare].action == 2)&&(elements[prepare].type.localeCompare("button") == 0)&&(elements[prepare].page_rel != -1)&&(!reference_tables.includes(elements[prepare].page_rel))) {
+            redirecter[recounter] = prepare;
+            recounter++;
         }
+    }
+    document.getElementById("loading_screen").innerHTML = "<div style='position: absolute;z-index:100000;top:0px;bottom:0px;left:0px;right:0px;background-color: rgba(128, 128, 128, .5);'><img class='center' src='css/img/loading.gif'></div>";
+    await sleep(2000);
+    document.getElementById("loading_screen").innerHTML = "";
     for (let pages = 1; pages <= number_of_pages; pages++) {
         let file = document.createElement('a');
         file.style.display = 'none';
@@ -32,9 +44,7 @@ function saving(b) { //скачивание файл
                     if (elementscode[i].left != undefined) text = text + elementscode[i].left;
                     if (elementscode[i].top != undefined) text = text + elementscode[i].top + "\"";
                     if (elementscode[i].placeholder != undefined) text = text + elementscode[i].placeholder;
-                    //if (elementscode[i].text != undefined) text = text + elementscode[i].text;
                     text = text + " name='" + elements[i].type + i +"' ";
-                    alert(elements[i].type);
                     if (elementscode[i].text != undefined) text = text + elementscode[i].text;
                     text = text + elementscode[i].end + "\n";
                     elements[i].type = elements[i].type + "formed";
@@ -43,6 +53,26 @@ function saving(b) { //скачивание файл
             text = text + "</form>\n";
         }
 
+        for(let redirect = 0; redirect < recounter; redirect++) {
+            if ((elements[redirecter[redirect]].type.includes("formed") == 1) && (pages == elements[redirecter[redirect]].page)) {
+                let new_type = elements[redirecter[redirect]].type.replace("formed","");
+                elements[redirecter[redirect]].type = new_type;
+                continue;
+            }
+            if ((elements[redirecter[redirect]].type.localeCompare("deleted") == 0) || (pages != elements[redirecter[redirect]].page)) {
+                continue;
+            }
+            text = text + "<form action='" + document.getElementById("page" + elements[redirecter[redirect]].page_rel).innerHTML + ".php'>\n";
+            text = text + "\t\t" + elementscode[redirecter[redirect]].begin + " style = \"";
+            if (elementscode[redirecter[redirect]].left != undefined) text = text + elementscode[redirecter[redirect]].left;
+            if (elementscode[redirecter[redirect]].top != undefined) text = text + elementscode[redirecter[redirect]].top + "\"";
+            if (elementscode[redirecter[redirect]].placeholder != undefined) text = text + elementscode[redirecter[redirect]].placeholder;
+            text = text + " name='" + elements[redirecter[redirect]].type + redirecter[redirect] +"' ";
+            if (elementscode[redirecter[redirect]].text != undefined) text = text + elementscode[redirecter[redirect]].text;
+            text = text + elementscode[redirecter[redirect]].end + "\n";
+            elements[redirecter[redirect]].type = elements[redirecter[redirect]].type + "formed";
+            text = text + "</form>\n";
+        }
 
         for(let i = 0; i < count; i++) {
             if ((elements[i].type.includes("formed") == 1) && (pages == elements[i].page)) {
@@ -57,12 +87,10 @@ function saving(b) { //скачивание файл
             if (elementscode[i].left != undefined) text = text + elementscode[i].left;
             if (elementscode[i].top != undefined) text = text + elementscode[i].top + "\"";
             if (elementscode[i].placeholder != undefined) text = text + elementscode[i].placeholder;
-            //if (elementscode[i].text != undefined) text = text + elementscode[i].text;
             if ((elementscode[i].text != undefined) && (elements[i].type.replace("formed","").localeCompare("table") == 0)) {
                 let variables = "";
                 for(let vars = 0; vars < count; vars++) {
-                    if(elements[vars].table_rel == i) {
-                        //variables = variables + "$" + elements[vars].type.replace("formed","") + vars + " = $_GET['" + elements[vars].type.replace("formed","") + vars + "'];\n";
+                    if((elements[vars].table_rel == i)&&(elements[vars].type.localeCompare("input") == 0)) {
                         variables = variables + "if (isset($_GET['" + elements[vars].type.replace("formed","") + vars + "'])) {\n";
                         variables = variables + "$" + elements[vars].type.replace("formed","") + vars + " = $_GET['" + elements[vars].type.replace("formed","") + vars + "'];\n";
                         variables = variables + "} else {\n";
@@ -70,6 +98,8 @@ function saving(b) { //скачивание файл
                     }
                 }
                 text = text + "<?php include \"content/" + elements[i].type.replace("formed","") + elements[i].id + "_content.php\"; ?>";
+                // alert("elementscode" + elementscode[i].text);
+                // alert("special" + special[i]);
                 let content_text = "<?php\n " + variables + " ?>" + elementscode[i].text;
                 content_text = content_text.replace("?><?php","");
                 let filename = elements[i].type.replace("formed","") + elements[i].id + "_content.php";
@@ -78,13 +108,11 @@ function saving(b) { //скачивание файл
             text = text + elementscode[i].end + "\n";
         }
         text = text + "\t</body>\n</html>";
-
-        //let filename = title + ".php";
         let filename = document.getElementById("page" + pages).innerHTML + ".php";
         zip.file(filename, text)
     }
 
-    let text = ".item {\n\tposition: absolute;\n}" // тут надо будет сделать более продвинутый генератор css
+    let text = ".item {\n\tposition: absolute;\n}"
     zip.file("style.css", text);
 
     zip.generateAsync({type:"base64"})

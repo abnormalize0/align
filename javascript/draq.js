@@ -3,9 +3,15 @@
 let elements = [];
 let elementscode = [];
 
-let original_header = [[],[]];
-let altered_header = [[],[]]
+// let original_header = [[],[]];
+// let altered_header = [[],[]]
+let original_header = new Array(100);
+let altered_header = new Array(100);
 
+for (let i = 0; i < original_header.length; i++) {
+  original_header[i] = new Array(100);
+  altered_header[i] = new Array(100);
+}
 let count = 0;
 
 let right_visible = false;
@@ -53,7 +59,7 @@ function properties_window(id) {  //анимация окна со свойст�
     let insert = "Для использования значения поля выберете в соответствующих выпадающих списках SQL запроса: <b>\"text field " + id + "\"</b>";
     insert = insert + "<br>Связать с кнопкой:<select id='inputableselect' onchange='elements[\"" + id + "\"].button_rel = this.value;elements[\"" + id + "\"].table_rel = elements[this.value].table_rel;'><option value='-1'>Не выбрано</option>";
     for(let i = 0; i < elements.length; i++) {
-      if ((elements[i].type.localeCompare("button") == 0)&&(elements[i].action == 1)&&(elements[i].table_rel != -1)) {
+      if ((elements[i].type.localeCompare("button") == 0)&&(elements[i].action == 1)&&(elements[i].table_rel != -1)&&(elements[i].page == elements[id].page)) {
         insert = insert + "<option value='" + i + "'> " + elements[i].text + " </option>";
       }
     }
@@ -89,7 +95,7 @@ function properties_window(id) {  //анимация окна со свойст�
     if (elements[id].action == 1) {
       tables_fill(id);
     } else if (elements[id].action == 2) {
-
+      pages_fill(id);
     } else {
       buttoption.innerHTML = "";
     }
@@ -106,7 +112,7 @@ function properties_window(id) {  //анимация окна со свойст�
       if (buttonaction.value == 1) {
         tables_fill(id);
       } else if (buttonaction.value == 2) {
-        
+        pages_fill(id);
       } else {
         buttoption.innerHTML = "";
       }
@@ -122,7 +128,17 @@ function properties_window(id) {  //анимация окна со свойст�
       buttoption.innerHTML = insert + "</select>";
       document.getElementById("butttableselect").value = elements[id].table_rel;
     }
+    function pages_fill(id) {
+      let buttoption = document.getElementById("buttoption");
+      let insert = "Перейти на страницу: <select onclick='elements[" + id + "].page_rel=this.value;' id='buttpageselect'><option value='-1'> Не выбрано </option>";
+      for(let i = 1; i <= number_of_pages; i++) {
+        insert = insert + "<option value='" + i + "'>" + document.getElementById("page" + i).innerHTML + " </option>";
+      }
+      buttoption.innerHTML = insert + "</select>";
+      document.getElementById("buttpageselect").value = elements[id].page_rel;
+    }
   } else if (elements[id].type == "table") {
+    table_substitution();
     let table = document.getElementById("el" + id);
     let headers_list = document.getElementById("table_headers");
     headers_list.innerHTML = "";
@@ -441,7 +457,8 @@ function mousedown2(b) {  //добавление элементов в2точк�
         x: 200 + "px",
         y: 130 + "px",
         action: 0,
-        table_rel: -1
+        table_rel: -1,
+        page_rel: -1
       }
 
       elementscode[count] = { //заменить
@@ -736,6 +753,7 @@ function table_substitution() {
                 }
                 table.rows[0].cells[i].innerHTML = altered_header[id][index];
                 console.table("change original " + original_header[id]);
+                console.table("of id" + id);
                 console.table("change altered " + altered_header[id]);
             }
         }
