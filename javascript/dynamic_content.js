@@ -275,7 +275,6 @@ function clearing() {
 
 async function sql_exec() {
     table_substitution();
-    console.log("EXEC");
     clearing();
     for (let i = 0; i < blocks; i++) {
         if (sql_blocks[i].purpose.localeCompare("select") == 0) {
@@ -356,15 +355,12 @@ async function sql_exec() {
                 }
                 let fetch_table = document.getElementById(table_id)
                 for (let headers = 0; headers < fetch_table.rows[0].cells.length; headers++) {
-                    //alert("here " + original_header[table_id.replace("el","")][0] + " of " + table_id.replace("el",""));
-                    //alert("headers[]=" + altered_header[table_id.replace("el","")][original_header[table_id.replace("el","")].indexOf(fetch_table.rows[0].cells[headers].innerHTML)]);
                     request = request + "headers[]=" + altered_header[table_id.replace("el","")][original_header[table_id.replace("el","")].indexOf(fetch_table.rows[0].cells[headers].innerHTML)] + "&";
                 }
                 response = await fetch("ajax_reqests/release_content.php?"+request+release_request);
                 if (response.ok) {
                     let text = await response.text();
                     elementscode[wtite_to].text = text;
-                    alert(text);
                     special[wtite_to] = text;
                 }
             }

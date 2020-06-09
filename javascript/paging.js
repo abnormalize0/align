@@ -32,7 +32,6 @@ function still_here() {
 
 function hide_paging(event) {
     let hover = cur_hovering;
-    console.log(cur_hovering);
     hovering = 0;
     let paging = document.getElementById("paging_panel");
     let bottom = 0;
@@ -96,7 +95,6 @@ function highlight(page) {
 }
 
 function page_properties(id) {  //анимация окна со свойствами и его наполнение. надо разделить
-    console.log(right_visible);
     if (!right_visible) {
       right_visible = true;
       let rightmenu = document.getElementById("text_input_properties");

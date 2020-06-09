@@ -117,8 +117,6 @@ function add_block(b) {  //добавление элементов в2точка
         insert = insert + "</select> <div id='connect_out" + blocks + "' style='right: -10px; top: 40px;' class='connect'> </div> </div>";
         document.getElementById("field").insertAdjacentHTML('beforeend',insert);
 
-        console.log(document.getElementById("block" + blocks).innerHTML);
-
         document.getElementById("connect_out" + blocks).addEventListener("mousedown",draw_line.bind(null,blocks));
         document.getElementById("connect_out" + blocks).addEventListener("mouseover",colorfy_out.bind(null,blocks));
         document.getElementById("connect_out" + blocks).addEventListener("mouseout",uncolorfy_out.bind(null,blocks));
@@ -672,18 +670,13 @@ function draw_line(id,e) {
           window.removeEventListener("mouseup", line_mouseup);
           let exist = sql_blocks[id].next_line;
           if (exist != null) {      //удаляю существующую линию оттуда откуда веду
-              console.log("here");
               sql_blocks[sql_blocks[id].next_line].prev_line = null;
               sql_blocks[sql_blocks[id].next_line].input_line = null;
           }
           
           if ((cur_hover == -1)||(sql_blocks[cur_hover].output_line == cur_line)) {
-            console.log("what");
-            
-            console.log("1");
             let exist = document.getElementById('line' + cur_line);
             if (exist!=null) {
-                console.log("2");
                 document.getElementById('line' + cur_line).remove();
             }
             exist = sql_blocks[id].next_line;
@@ -700,7 +693,6 @@ function draw_line(id,e) {
           }
           exist = sql_blocks[cur_hover].prev_line;
           if (exist != null) {
-              console.log("for what");
               document.getElementById('line' + sql_blocks[sql_blocks[cur_hover].prev_line].output_line).remove();
               sql_blocks[sql_blocks[cur_hover].prev_line].next_line = null;
               sql_blocks[sql_blocks[cur_hover].prev_line].output_line = null;
@@ -711,7 +703,6 @@ function draw_line(id,e) {
           sql_blocks[cur_hover].input_line = null;
           exist = sql_blocks[cur_hover].prev_line;
           if (exist != null) {
-            console.log("no,here");
               document.getElementById('line' + sql_blocks[sql_blocks[cur_hover].prev_line].output_line).remove();
               sql_blocks[sql_blocks[cur_hover].prev_line].next_line = null;
               sql_blocks[sql_blocks[cur_hover].prev_line].output_line = null;
@@ -723,7 +714,6 @@ function draw_line(id,e) {
           sql_blocks[id].output_line = cur_line;
 
           drawing = 0;
-          console.log("-");
           where_check();
           where_selection();
     }
@@ -789,18 +779,13 @@ function join_draw_line(id,e) {
           window.removeEventListener("mouseup", line_mouseup);
           let exist = sql_blocks[id].next_join_line;
           if (exist != null) {      //удаляю существующую линию оттуда откуда веду
-              console.log("here");
               sql_blocks[sql_blocks[id].next_join_line].prev_join_line = null;
               sql_blocks[sql_blocks[id].next_join_line].input_join_line = null;
           }
           
           if ((cur_hover == -1)||(sql_blocks[cur_hover].output_join_line == cur_line)) {
-            console.log("what");
-            
-            console.log("1");
             let exist = document.getElementById('line' + cur_line);
             if (exist!=null) {
-                console.log("2");
                 document.getElementById('line' + cur_line).remove();
             }
             exist = sql_blocks[id].next_join_line;
@@ -817,7 +802,6 @@ function join_draw_line(id,e) {
           }
           exist = sql_blocks[cur_hover].prev_join_line;
           if (exist != null) {
-              console.log("for what");
               document.getElementById('line' + sql_blocks[sql_blocks[cur_hover].prev_join_line].output_join_line).remove();
               sql_blocks[sql_blocks[cur_hover].prev_join_line].next_join_line = null;
               sql_blocks[sql_blocks[cur_hover].prev_join_line].output_join_line = null;
@@ -828,7 +812,7 @@ function join_draw_line(id,e) {
           sql_blocks[cur_hover].input_join_line = null;
           exist = sql_blocks[cur_hover].prev_join_line;
           if (exist != null) {
-            console.log("no,here");
+
               document.getElementById('line' + sql_blocks[sql_blocks[cur_hover].prev_join_line].output_join_line).remove();
               sql_blocks[sql_blocks[cur_hover].prev_join_line].next_join_line = null;
               sql_blocks[sql_blocks[cur_hover].prev_join_line].output_join_line = null;
@@ -840,7 +824,6 @@ function join_draw_line(id,e) {
           sql_blocks[id].output_join_line = cur_line;
 
           join_drawing = 0;
-          console.log("-");
           where_check();
           where_selection();
     }

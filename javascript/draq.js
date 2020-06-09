@@ -72,7 +72,6 @@ function properties_window(id) {  //анимация окна со свойст�
       document.getElementById("tree" + id).innerHTML = "> " + ph.value;
     }
     document.getElementById("inputableselect").value = elements[id].button_rel;
-    //textfieldsetup.innerHTML = "<input oninput='alert(document.getElementById(\"aaa\").value);' id='aaa' type='text' name='city' list='cityname'><datalist id='cityname'><option value='Boston'><option value='Cambridge'></datalist>";
     
   } else if (elements[id].type == "text") {
     let texttext = document.getElementById("texttext");
@@ -149,7 +148,6 @@ function properties_window(id) {  //анимация окна со свойст�
         let index2 = altered_header[id].indexOf(table.rows[0].cells[i].innerHTML);
         table.rows[0].cells[i].innerHTML = document.getElementById("header" + i).value;
         altered_header[id][index2] = document.getElementById("header" + i).value;
-        console.table("insert" + altered_header[id]);
       }
     }
   }
@@ -439,7 +437,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
         left: "left: 200px;",
         top: "top: 100px;",
         placeholder: "placeholder = \"Текстовое поле " + count + "\" ",
-        end: "class=\"item\">"
+        end: "class=\"style0\">"
       }
 
       document.getElementById("tree").insertAdjacentHTML('beforeend', "<div id = \"tree" + count + "\">> Текстовое поле " + count + "</div>");
@@ -462,7 +460,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
       }
 
       elementscode[count] = { //заменить
-        begin: "<button class=\"item\"",
+        begin: "<button class=\"style0\"",
         left: "left: 200px;",
         top: "top: 130px;",
         text: "> Кнопка " + count,
@@ -484,7 +482,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
       }
 
       elementscode[count] = { //это тоже
-        begin: "<div class=\"item\"",
+        begin: "<div class=\"style0\"",
         left: "left: 200px;",
         top: "top: 160px;",
         text: "> Вставить текст " + count,
@@ -507,7 +505,7 @@ function mousedown2(b) {  //добавление элементов в2точк�
       }
 
       elementscode[count] = { //это тоже
-        begin: "<table border=\"1\" class=\"item\"",
+        begin: "<table border=\"1\" class=\"style0\"",
         left: "left: 200px;",
         top: "top: 160px;",
         text: "> Вставить текст " + count,
@@ -745,16 +743,11 @@ function table_substitution() {
             if ((index == -1)&&(index2 == -1)) {
                 original_header[id].push(table.rows[0].cells[i].innerHTML);
                 altered_header[id].push(table.rows[0].cells[i].innerHTML);
-                console.table("add original " + original_header[id]);
-                console.table("add altered " + altered_header[id]);
             } else {
                 if (index == -1) {
                     index = index2;
                 }
                 table.rows[0].cells[i].innerHTML = altered_header[id][index];
-                console.table("change original " + original_header[id]);
-                console.table("of id" + id);
-                console.table("change altered " + altered_header[id]);
             }
         }
       }

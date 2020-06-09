@@ -22,7 +22,6 @@ function new_style(number,title) {
         font_size: "16px",
         color: "#000000", //цвет
         text_align: "left", //css-текст
-        text_indent: null,
         background_color: "#FFFFFF", //css фон
         border_style: "solid", //css рамка
         border_color: "#000000",
@@ -34,7 +33,7 @@ function new_style(number,title) {
 function styles_window(id) {
     let style_list = document.getElementById("style_list");
     let style_list_insertion;
-    style_list_insertion = "<h2>Настройка стиля элемента</h2><div><div style='display: inline-block;'>Стиль: <select style='width:130px;' onchange='elements[" + id + "].style = this.value; change_style(this.value);selector_fill(this.value);'>";
+    style_list_insertion = "<h2>Настройка стиля элемента</h2><div><div style='display: inline-block;'>Стиль: <select style='width:130px;' onchange='restyle(" + id + ",this.value);'>";
     for (let i = 0; i < styles.length; i++) {
         if (elements[id].style == i) {
             style_list_insertion = style_list_insertion + "<option selected value='" + i + "'>" + styles[i].title + "</option>";
@@ -43,19 +42,29 @@ function styles_window(id) {
         }
     }
     style_list_insertion = style_list_insertion + "</select>";
-    style_list.innerHTML = style_list_insertion + "</div><div onclick='rename_styles(" + id + ")' style='background-color:orange; width: 120px; display: inline-block;'>Переименовать</div><div onclick='new_style(null, null); elements[" + id + "].style=" + styles.length + "; styles_window(" + id + "); change_style(" + styles.length + ")' style='background-color:orange; width: 120px; display: inline-block;'>Новый стиль</div></div>";
+    style_list.innerHTML = style_list_insertion + "</div><div onclick='rename_styles(" + id + ")' style='background-color:orange; width: 120px; display: inline-block;'>Переименовать</div><div onclick='new_style(null, null); restyle(" + id + "," + styles.length + ");styles_window(" + id + ");' style='background-color:orange; width: 120px; display: inline-block;'>Новый стиль</div></div>";
     selector_fill(elements[id].style, id);
+}
+
+function restyle(id, value) {
+    let old_style = "style" + elements[id].style;
+    let new_style = "style" + value;
+    elementscode[id].begin = elementscode[id].begin.replace(old_style,new_style);
+    elementscode[id].end = elementscode[id].end.replace(old_style,new_style);
+    elements[id].style = value; 
+    change_style(value);
+    selector_fill(value);
 }
 
 function rename_styles(id) {
     let setup_field = document.getElementById("style_list");
     let insertion = "<h2>Настройка стиля элемента</h2>Название:<input id='rename_field' style='width:150px;' value='" + styles[elements[id].style].title + "'>";
-    insertion = insertion + "<div><div onclick='rename_confirm(" + elements[id].style + ")' style='display: inline-block; width: 120px; background-color: orange;'>Принять</div><div onclick='styles_window(" + elements[id].style + ");' style='display: inline-block; width: 120px; background-color: red;'>Отмена</div></div>"
+    insertion = insertion + "<div><div onclick='rename_confirm(" + id + ")' style='display: inline-block; width: 120px; background-color: orange;'>Принять</div><div onclick='styles_window(" + id + ");' style='display: inline-block; width: 120px; background-color: red;'>Отмена</div></div>"
     setup_field.innerHTML = insertion;
 }
 
 function rename_confirm(id) {
-    styles[id].title = document.getElementById("rename_field").value;
+    styles[elements[id].style].title = document.getElementById("rename_field").value;
     styles_window(id);
 }
 
@@ -98,9 +107,6 @@ function change_style(style) {
             }
             if (styles[style].text_align_last != null) {
                 chahgable.style.textAlignLast = styles[style].text_align_last;
-            }
-            if (styles[style].text_indent != null) {
-                chahgable.style.textIndent = styles[style].text_indent;
             }
             if (styles[style].background_color != null) {
                 chahgable.style.backgroundColor = styles[style].background_color;

@@ -98,8 +98,6 @@ async function saving(b) { //скачивание файл
                     }
                 }
                 text = text + "<?php include \"content/" + elements[i].type.replace("formed","") + elements[i].id + "_content.php\"; ?>";
-                // alert("elementscode" + elementscode[i].text);
-                // alert("special" + special[i]);
                 let content_text = "<?php\n " + variables + " ?>" + elementscode[i].text;
                 content_text = content_text.replace("?><?php","");
                 let filename = elements[i].type.replace("formed","") + elements[i].id + "_content.php";
@@ -111,8 +109,26 @@ async function saving(b) { //скачивание файл
         let filename = document.getElementById("page" + pages).innerHTML + ".php";
         zip.file(filename, text)
     }
-
-    let text = ".item {\n\tposition: absolute;\n}"
+    let text = "";
+    for(let i = 0; i < styles.length; i++) {
+        text = text + ".style" + i + " {\n\tposition: absolute;\n";
+        if(styles[i].width != "") text = text + "\twidth: " + styles[i].width + "px;\n";
+        if(styles[i].height != "") text = text + "\theight: " + styles[i].height + "px;\n";
+        if(styles[i].zindex != "") text = text + "\tz-index: " + styles[i].zindex + ";\n";
+        text = text + "\toverflow-x: " + styles[i].overflow_x + ";\n";
+        text = text + "\toverflow-y: " + styles[i].overflow_y + ";\n";
+        text = text + "\tfont-family: \"" + styles[i].font_family + "\";\n";
+        text = text + "\tfont-weight: " + styles[i].font_weight + ";\n";
+        text = text + "\tfont-style: " + styles[i].font_style + ";\n";
+        text = text + "\tfont-size: " + styles[i].font_size + ";\n";
+        text = text + "\tcolor: " + styles[i].color + ";\n";
+        text = text + "\ttext-align: " + styles[i].text_align + ";\n";
+        text = text + "\tbackground-color: " + styles[i].background_color + ";\n";
+        text = text + "\tborder-style: " + styles[i].border_style + ";\n";
+        text = text + "\tborder-color: " + styles[i].border_color + ";\n";
+        text = text + "\tborder-width: " + styles[i].border_width + ";\n";
+        text = text + "\tborder-radius: " + styles[i].border_radius + ";\n}\n\n";
+    }
     zip.file("style.css", text);
 
     zip.generateAsync({type:"base64"})
