@@ -15,7 +15,7 @@ html, body {
     height: 35px;
     width: 280px;
     background: orange;
-    right: 10px; top: 700px;
+    right: 10px; bottom: 210px;
     font-size: 180%;
 }
 
@@ -151,9 +151,10 @@ html, body {
     position: absolute;
     text-align: center;
     height: 35px;
-    width: 130px;
+    line-height: 35px;
+    width: 280px;
     background: orange;
-    right: 160px; top: 130px;
+    right: 10px; top: 130px;
 }
 
 .save_project_baton {
@@ -162,7 +163,17 @@ html, body {
     height: 35px;
     width: 130px;
     background: orange;
-    right: 10px; top: 130px;
+    right: 160px; top: 175px;
+}
+
+.load_project_baton {
+    position: absolute;
+    text-align: center;
+    height: 35px;
+    line-height: 35px;
+    width: 130px;
+    background: orange;
+    right: 10px; top: 175px;
 }
 
 .defaultclass {

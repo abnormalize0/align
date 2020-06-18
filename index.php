@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="css/paging.css" />
     </head>
     <body>
+    
         <div class="substrate" id="substrate"></div>
         <div class="menu" id="textmenu">
             <h1>Добавить элементы</h1>
@@ -29,8 +30,9 @@
         <div id="settings" class="settings">
             <h1>Настройки</h1>
             Название проекта: <input id="untitled" value="untitled" style="position: absolute;">
-            <div class="save_baton"> Сохранить HTML/CSS </div>
+            <div class="save_baton"> Сохранить php/CSS </div>
             <div class="save_project_baton"> Сохранить как проект </div>
+            <div class="load_project_baton"> Загрузить проект </div>
             <div class="tosql" id="tosql">to sql generator</div>
             <div class="ranges" align="center">
                 Настроить тип и шаг перемещения элементов<br>
@@ -90,7 +92,6 @@
             <div id="pages_part" class="pages_part"></div>
             <div class="add_block" id="add_block"> + </div>
         </div>
-
         <script src="jszip_lib/dist/jszip.js"></script>
         <script src="javascript/draq.js"></script>
         <script src="javascript/sqlgenerate.js"></script>
@@ -99,6 +100,8 @@
         <script src="javascript/dynamic_content.js"></script>
         <script src="javascript/saving.js"></script>
         <script src="javascript/style_editor.js"></script>
+        <script src="javascript/export.js"></script>
+        <script src="javascript/import.js"></script>
         <div id="loading_screen"></div>
     </body>
 </html>

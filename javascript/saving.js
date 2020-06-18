@@ -25,7 +25,7 @@ async function saving(b) { //скачивание файл
         }
     }
     document.getElementById("loading_screen").innerHTML = "<div style='position: absolute;z-index:100000;top:0px;bottom:0px;left:0px;right:0px;background-color: rgba(128, 128, 128, .5);'><img class='center' src='css/img/loading.gif'></div>";
-    await sleep(2000);
+    await sleep(1000);
     document.getElementById("loading_screen").innerHTML = "";
     for (let pages = 1; pages <= number_of_pages; pages++) {
         let file = document.createElement('a');

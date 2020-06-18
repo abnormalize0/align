@@ -24,20 +24,39 @@ $dbname = $_COOKIE["database"];
 $host = $_COOKIE["host"];
 $login = $_COOKIE["login"];
 $pass = $_COOKIE["pass"];
-
-$con = mysqli_connect($host,$login,$pass,$dbname);
-mysqli_select_db($con,$dbname);
+$method = $_COOKIE["method"];
+if(isset($_COOKIE["schema"])){
+    $schema = $_COOKIE["schema"];
+}
+$pdo = "";
+if ($method == 1) {
+    $pdo = new PDO("mysql:host=".$host.";dbname=".$dbname, $login, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} else if ($method == 2) {
+    $line = "host=".$host." dbname=".$dbname." user=".$login." password=".$pass;
+    $pdo = pg_connect($line);
+}
 
 $index = 0;
 $table_title = 0;
-$tables_sql="SHOW TABLES FROM ".$dbname;
-$tables_result = mysqli_query($con,$tables_sql);
-while($row = mysqli_fetch_array($tables_result)) {
+$name = "";
+if ($method == 1) {
+    $sql= "SHOW TABLES FROM ".$dbname;
+    $result = $pdo->query($sql);
+    $tables = $result->fetchAll();
+    $name = 'Tables_in_'.$dbname;
+} else if ($method == 2) {
+    $sql= "SELECT table_name FROM information_schema.tables WHERE table_catalog = '".$dbname."' AND table_schema != 'pg_catalog' AND table_schema != 'information_schema'";
+    $result = pg_query($pdo, $sql);
+    $tables = pg_fetch_all($result);
+    $name = 'table_name';
+}
+foreach ($tables as $table):
     if ($index == $from) {
-        $table_title = $row['Tables_in_'.$dbname];
+        $table_title = $table[$name];
     }
     $index++;
-}
+endforeach;
 
 echo "<tr>";
 if (!isset($select)) {
@@ -63,7 +82,11 @@ $i = 1;
 for ($i; $i < count($select); $i++) {
     $sql = $sql.", ".$select[$i];
 }
-$sql = $sql." FROM `$table_title`";
+if ((isset($schema))&&($method == 2)) {
+    $sql = $sql." FROM `$schema`.`$table_title`";
+} else {
+    $sql = $sql." FROM `$table_title`";
+}
 $global_order = false;
 if (isset($join_method)) {
     for ($i = 0; $i < count($join_method); $i++) {
@@ -117,15 +140,30 @@ if (isset($order_direction)) {
         $sql = $sql. " DESC";
     }
 }
-$result = mysqli_query($con,$sql);
-while($row = mysqli_fetch_array($result)) {
-    echo "<tr>";
-    for ($i = 0; $i < count($select); $i++) {
-        echo "<td>" . $row[$i] . "</td>";
-    }
-    echo "</tr>";
-}
-//echo $sql;
 
-mysqli_close($con);
+if ($method == 1) {
+    $result = $pdo->query($sql);
+    $tables = $result->fetchAll();
+    foreach ($tables as $table):
+        echo "<tr>";
+        for ($i = 0; $i < count($select); $i++) {
+            echo "<td>" . str_replace("`","\"",$table[$i]) . "</td>";
+        }
+        echo "</tr>";
+    endforeach;
+} else if ($method == 2) {
+    $sql = str_replace("`","\"",$sql);
+    $result = pg_query($pdo, $sql);
+    for ($i = 0; $i < count($select); $i++) {
+        $arr = explode("`.`",$select[$i]);
+        $select[$i] = str_replace("`","",$arr[1]);
+    }
+    while ($row = pg_fetch_assoc($result)) {
+        echo "<tr>";
+        for ($i = 0; $i < count($select); $i++) {
+            echo "<td>" . $row[$select[$i]] . "</td>";
+        }
+        echo "</tr>";
+      }
+}
 ?>
